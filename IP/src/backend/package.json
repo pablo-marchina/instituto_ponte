@@ -11,8 +11,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "migrate": "tsx src/database/migrate.ts",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --verbose",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch "
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
@@ -21,7 +21,9 @@
     "dotenv": "^17.4.2",
     "fastify": "^5.8.5",
     "fastify-type-provider-zod": "^6.1.0",
+    "jose": "^6.2.3",
     "pg": "^8.21.0",
+    "xlsx": "^0.18.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {

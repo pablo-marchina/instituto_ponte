@@ -152,6 +152,18 @@ https://www.figma.com/design/hT0ZlGn9DAz64Y1gIwFVrM/Sem-t%C3%ADtulo?node-id=0-1&
 ## ---------------------------Outro Dia-------------------------
 
 
+### Data: 27/05/2026
+
+
+### Objetivo do Dia: Revisar feedback do Wesley
+
+
+### Alterações Realizadas: Destaquei o que temos que alterar em nosso projeto, e o que precisamos pedir revisão.
+
+
+## ---------------------------Outro Dia-------------------------
+
+
 ### Data: 28/05/2026
 
 

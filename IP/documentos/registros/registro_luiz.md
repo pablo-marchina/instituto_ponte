@@ -2,6 +2,8 @@
 
 # Sprint 2
 
+# Sprint 2
+
 > Extraído do `registro.md` do projeto — apenas contribuições de Luiz Gustavo, organizadas por data.
 
 ---
@@ -94,6 +96,7 @@ Wireframe do coordenador finalizado e inserido no WAD do projeto. ✅
 ---
 
 ## 📊 Resumo Geral da sprint 2
+## 📊 Resumo Geral da sprint 2
 
 | Data | Atividade |
 |------|-----------|
@@ -117,6 +120,34 @@ Realizei a organização e divisão dos artefatos entre os membros da equipe, de
 
 ### Links
 
+## 📅 20/05/2026
+
+### Objetivo do Dia
+Dividir as tasks do artefato 7 dentre o guia de estilos e protótipo.
+
+### Alteração
+Dividi as tasks do artefato 7 entre o guia de estilos e o protótipo de alta fidelidade, definindo as responsabilidades de cada membro da equipe para garantir um progresso eficiente.
+
+### Links
+
+## 📅 21/05/2026
+
+### Objetivo do Dia Avaliar e delegar tarefas de correção em relação a artefatos da sprint passada 
+
+### Alteração Realizei uma avaliação detalhada dos artefatos produzidos na sprint passada, identificando áreas que necessitam de correção ou melhoria. Com base nessa avaliação, deleguei as tarefas de correção aos membros da equipe responsáveis, garantindo que todos estejam alinhados com os padrões de qualidade estabelecidos para o projeto.
+
+### Links
+
+## 📅 22/05/2026
+
+### Objetivo do Dia
+Estudar sobre o guia de estilos a partir de autoestudos e se aprofundar no tema
+
+### Alteração
+Realizei estudos aprofundados sobre o guia de estilos, explorando conceitos e melhores práticas para a criação de um guia de estilos eficaz e alinhado com as necessidades do projeto.
+
+### Links
+
 ## 📅 25/05/2026
 
 ### Objetivo do Dia
@@ -126,7 +157,6 @@ Estudar guia de estilos e criar prévia.
 Estudei guia de estilos de acordo com a adalove, estruturei toda a base do nosso guia de estilos e criei uma versão prévia dele utilizando o FigmaMake.
 
 ### Links
-
  [Link da prévia](https://sesame-lunar-20691913.figma.site/)
 
 ## 📅 26/05/2026
@@ -141,3 +171,26 @@ Finalizei todo o style guide do projeto.
 
  [Link](https://sesame-lunar-20691913.figma.site/)
 
+## 📅 27/05/2026
+
+### Objetivo do Dia
+
+### Alteração
+
+### Links
+
+## 📅 28/05/2026
+
+### Objetivo do Dia
+
+### Alteração
+
+### Links
+
+## 📅 29/05/2026
+
+### Objetivo do Dia
+
+### Alteração
+
+### Links

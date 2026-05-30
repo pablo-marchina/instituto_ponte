@@ -160,7 +160,7 @@ Heloísa: Resolver todos os problemas do artefato 5 da sprint 2
 
 ### Objetivo do Dia
 
-Heloísa: 
+Heloísa: Estudo e criação da arquitetura em camadas(WAD 3.2.1)
 
 ### Banco de dados
 
@@ -168,7 +168,7 @@ Heloísa:
 
 #### Heloísa:
 
-- Alteração: 
+- Alteração: Estudo aprofundado da arquitetura em camadas (WAD 3.2.1) e desenvolvimento da seção no WAD, definindo todas as funções das camadas.
 
 ### Banco De Dados artefato 9
 
@@ -176,7 +176,7 @@ Heloísa:
 
 ### Objetivo do Dia
 
-Heloísa: 
+Heloísa: Atualização do diagrama de sequências UML (seção 3.2.4)
 
 ### Banco de dados
 
@@ -184,7 +184,7 @@ Heloísa:
 
 #### Heloísa:
 
-- Alteração: 
+- Alteração: Atualizar o diagrama de sequências UML seção 3.2.4 para condizer com os requisitos da Sprint 3 de atualização dos nomes dos comandos.
 
 ### Banco De Dados artefato 9
 
@@ -192,7 +192,7 @@ Heloísa:
 
 ### Objetivo do Dia
 
-Heloísa: 
+Heloísa: Atualização da Matriz de Rastreabilidade
 
 ### Banco de dados
 
@@ -208,12 +208,12 @@ Heloísa:
 
 ### Objetivo do Dia
 
-Heloísa:
+Heloísa: Fazer o relatório de desenvolvimento, seçã0 4.1 do WAD
 
 ### Banco de dados
 
 ### Alterações Realizadas
 
-#### Heloísa:
+#### Heloísa: 
 
-- Alteração: 
+- Alteração: Foi criado o relatório de desenvolvimento da seção 4.1 do WAD, registrando as principais mudanças e pontos chave da sprint.

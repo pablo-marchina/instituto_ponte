@@ -110,3 +110,51 @@ https://www.canva.com/design/DAHJqZ6nGfM/g4QPY7wuvPSYB-7JGkWBpA/edit
 
 ### Observações:
 O trabalho de wireframe exigiu atenção aos detalhes de espaçamento e alinhamento para manter a consistência com os componentes já criados pelo Matheus. A integração entre a apresentação e os wireframes ficou coesa, mostrando o fluxo completo do usuário professor na plataforma.
+
+---
+
+### Data: 20/05/2026 (Quarta-feira)
+
+### Objetivo do Dia
+Criar o Diagrama de Classes Arquitetural da aplicação na subseção 3.2.3.1 do WAD, modelando os componentes centrais das camadas Controller, Service, Repository e Model.
+
+### Alterações Realizadas
+Desenvolvi o Diagrama de Classes Arquitetural complementar ao diagrama de domínio já existente, adicionando a subseção 3.2.3.1 no WAD. Modelei as principais classes de cada camada arquitetural: os Controllers responsáveis pelas rotas da API, os Services com a lógica de negócio, os Repositories para abstração do banco de dados, e os Models representando as entidades do domínio. Utilizei estereótipos UML (&lt;&lt;controller&gt;&gt;, &lt;&lt;service&gt;&gt;, &lt;&lt;repository&gt;&gt;, &lt;&lt;model&gt;&gt;) para identificar cada camada e setas de dependência para mostrar as relações entre elas (Controller → Service → Repository → Model). Segui a mesma notação PlantUML e estilo visual do diagrama de domínio para manter consistência no documento. O diagrama foi inserido logo após a seção 3.2.3, mantendo a numeração sequencial das subseções.
+
+### Links:
+https://git.inteli.edu.br/graduacao/2026-1b/t24/g05/-/issues/112
+documentos/wad.md (seção 3.2.3.1)
+
+### Observações:
+O diagrama arquitetural complementa a visão de domínio já documentada, mostrando como as entidades se organizam nas camadas do backend. A modelagem seguiu o padrão definido em conjunto com a equipe e foi revisada antes do fechamento do issue.
+
+---
+
+### Data: 25/05/2026 (Segunda-feira)
+
+### Objetivo do Dia
+Documentar os padrões de projeto aplicados no desenvolvimento do backend na nova subseção 3.2.7 do WAD.
+
+### Alterações Realizadas
+Criei a subseção 3.2.7 no WAD com a documentação completa dos padrões de projeto utilizados no backend do sistema. Descrevi e justifiquei tecnicamente cada padrão adotado:
+
+**Repository Pattern:** Implementado na camada de dados para abstrair o acesso ao banco, desacoplando a lógica de negócio dos detalhes de persistência e facilitando a substituição do provedor de banco.
+
+**Service Layer Pattern:** Centraliza as regras de negócio em services específicos, mantendo os controllers enxutos e permitindo reutilização da lógica entre diferentes partes do sistema.
+
+**MVC no Backend:** Seguido na separação das camadas Controller (rotas), Model (entidades JPA) e View (retorno JSON), organizando o código de acordo com o padrão arquitetural definido para o projeto.
+
+**Dependency Injection:** Utilizado para injetar dependências entre as camadas (Controller → Service → Repository), garantindo baixo acoplamento e facilitando testes unitários.
+
+**Singleton:** Adotado para beans de configuração, conexões e providers que precisam de única instância durante todo o ciclo de vida da aplicação.
+
+**DTO Pattern:** Implementado para transferir dados entre camadas sem expor as entidades JPA diretamente, controlando exatamente quais campos são trafegados em cada operação.
+
+Relacionei cada padrão com componentes reais do código, incluindo nomes de classes e exemplos de uso, demonstrando a aplicação prática na arquitetura do sistema.
+
+### Links:
+https://git.inteli.edu.br/graduacao/2026-1b/t24/g05/-/issues/123
+documentos/wad.md (seção 3.2.7)
+
+### Observações:
+A documentação dos padrões foi validada com a equipe para garantir que cada padrão descrito corresponde a uma implementação real no código do backend. A seção 3.2.7 ficou posicionada após os diagramas de implantação, seguindo a estrutura definida para o WAD.

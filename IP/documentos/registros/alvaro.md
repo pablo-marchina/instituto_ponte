@@ -456,7 +456,7 @@ essa tabela verdade foi feita como uma base para as demais que serão criadas, p
 ## ----------------------Outro Dia---------------------------
 
 
-### Data: 19/05/2026
+### Data: 21/05/2026
 
 
 
@@ -467,7 +467,7 @@ Criar segunda tabela verdade
 
 (consultas de SELECT, UPDATE e/ou DELETE com diferentes combinações de condições AND, OR, NOT, LIKE, IN) e
 Tabela verdade.
-Utilize o exemplo do wad e mais a mais a primeira tabela verdade
+Utilize o exemplo do wad e mais a primeira tabela verdade
 
 
 ### Alterações Realizadas
@@ -497,19 +497,85 @@ porém ainda nenhuma dessas tabelas estão prontas pois é necessário a finaliz
 
 ![](/assets/2-tabela-verdade.png) 
 
-## ---------------------Outro dia--------------------
+<<<<<<< documentos/registros/alvaro.md
+## -----------------------Outro dia---------------------
 
-
-### Data: 27/05/2026
-
-
-
+### Data: 25/05/2026
 
 ### Objetivo do Dia
 
-Criar apresentação sprint 3:
+Criar terceira tabela verdade
 
-Criar uma pequena apresentação apenas mostrando tudo o que foi alterado em relação à interface comparado ao que vocês já mostraram até agora (Compartilhar na TV do grupo + Pedro).
+(consultas de SELECT, UPDATE e/ou DELETE com diferentes combinações de condições AND, OR, NOT, LIKE, IN) e
+Tabela verdade.
+Utilize o exemplo do wad e mais a primeira tabela verdade.
+
+### Alterações Realizadas
+
+#### Álvaro:
+
+* Alteração:
+
+Implementei um Template de SQL + lógica proposicional com a seguinte estrutura:
+
+* Expressão SQL
+* Proposições lógicas
+* Expressão lógica proposicional
+* Tabela Verdade
+
+##### Observação:
+
+A tabela ainda não está completa, pois atualmente encontra-se em formato `.html`. A conversão para o formato `.md` será realizada amanhã, dia 26/05/2026.
+
+## Foto do Template SQL e Lógica proposicional
+
+![](/assets/3-tabela-verdade.png)
+
+
+## ----------------------Outro Dia---------------------------
+
+### Data: 26/05/2026
+
+### Objetivo do Dia
+
+Criar quarta tabela verdade
+
+(consultas de SELECT, UPDATE e/ou DELETE com diferentes combinações de condições AND, OR, NOT, LIKE, IN) e
+Tabela verdade.
+Utilize o exemplo do wad e mais a primeira tabela verdade.
+
+Revisar as outras tabelas.
+
+### Alterações Realizadas
+
+#### Álvaro:
+
+* Alteração:
+
+Implementei um Template de SQL + lógica proposicional com a seguinte estrutura:
+
+* Expressão SQL
+* Proposições lógicas
+* Expressão lógica proposicional
+* Tabela Verdade
+
+Revisei as outras tabelas.
+
+##### Observação:
+
+Nenhuma.
+
+## Foto do Template SQL e Lógica proposicional
+
+![](/assets/4-tabela-verdade.png)
+
+## ---------------------Outro dia--------------------
+
+### Data: 27/05/2026
+
+### Objetivo do Dia
+
+Criar uma pequena apresentação apenas mostrando tudo o que foi alterado em relação à interface comparado ao que nós já mostramos até agora(Compartilhar na TV do grupo + Pedro).
 
         
       Criar três tarefas para que a Verônica execute utilizando a aplicação local - aqui será um teste de fluxo.
@@ -524,23 +590,63 @@ Criar uma pequena apresentação apenas mostrando tudo o que foi alterado em rel
         
       Compartilhar as ações da Verônica via Google Meet para o Pedro acompanhar e fazer sugestões, caso queira.
 
+Revisar todos os artefatos de programação de todas as sprints em relação aos feedbacks do professor Wesley.
+
+Para a correção, utilizar o seguinte método:
+
+Vermelho --> pedir revisão para o professor (erro de correção).
+Laranja --> arrumar de acordo com o feedback.
+Rosa --> revisar depois que terminar as tarefas da sprint 3.
 
 ### Alterações Realizadas
 
-
-
-
 #### Álvaro:
 
-Criei uma pequena apresentação apenas mostrando tudo o que foi alterado em relação à interface comparado ao que nós já mostramos até agora
+Elaborei os slides com o objetivo de apresentar uma comparação entre o que foi desenvolvido na sprint anterior (sprint 2) e o que foi realizado nesta sprint (sprint 3). O primeiro slide apresenta uma introdução ao tema, enquanto o segundo traz o título da apresentação e uma visão geral da sprint 2. Do terceiro ao sexto slide, foram incluídos os wireframes criados durante a sprint, utilizados como base de comparação com as entregas realizadas na sprint 3. Por fim, o último slide foi destinado ao encerramento da apresentação, com a identificação do grupo e um agradecimento pela presença da Verônica.
 
+Revi todos os comentários feitos pelo professor e grifei as correções da seguinte maneira:
+
+Vermelho --> pedir revisão para o professor (erro de correção).
+Laranja --> arrumar de acordo com o feedback.
+Rosa --> revisar depois que terminar as tarefas da sprint 3.
 
 ##### Observação:
 
-Nenhuma
+Nenhuma.
+
+## Link
+
+https://docs.google.com/spreadsheets/d/1SW_f9gVGW6yVsgPzkLq_E8s53s84jY7G/edit?gid=1772680983#gid=1772680983 
+
+https://www.canva.com/design/DAHK4Rv8QJg/e65wdrxs2tkp_NeoWeJvWg/edit 
+
+## ---------------------Outro dia--------------------
+
+### Data: 28/05/2026
+
+### Objetivo do Dia
+
+Revisar todos os feedbacks da planilha criada pelo professor de programação em relação à Sprint 2, revendo todas as rubricas e suas seções:
+
+Rubrica 1
+Rubrica 2
+Rubrica 3
+Rubrica 4
+Rubrica 5
+
+### Alterações Realizadas
+
+#### Álvaro:
+
+Verifiquei cada seção de cada rubrica e criei um documento com todas as revisões, apontando em qual rubrica e em qual item/seção o ponto foi descontado incorretamente.
+
+##### Observação:
+
+Houve vários erros de correção devido à utilização da migration da Sprint 3 para a correção do artefato 5 da Sprint 2.
+
+## Link do docs:
+
+https://docs.google.com/document/d/1DptyVm8M-KIZH_O-UZcHAutej6qWo7yZIjbUuymURbM/edit?tab=t.0
 
 
-
-## Link do Slide
-
-https://www.canva.com/design/DAHK4Rv8QJg/e65wdrxs2tkp_NeoWeJvWg/edit  
+## --------------------------FIM DA SPRINT 3----------------------------
