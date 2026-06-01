@@ -1549,85 +1549,145 @@ Conecta-se ao processo de desenvolvimento e à sustentabilidade do sistema como 
 
 ### 3.1.4. Matriz RF → RN → Endpoint (sprints 3 a 5)
 
-Esta matriz foi atualizada conforme o estado atual da implementação. O backend já possui servidor Fastify, Swagger UI em `/docs`, conexão PostgreSQL e migration com tabelas, enums, índices, triggers e políticas RLS.
+A matriz abaixo foi atualizada a partir das rotas registradas no backend Fastify em `src/backend/src/app.ts`. Todos os endpoints expostos pela WebAPI usam o prefixo `/api/v1`; a documentação navegável é servida pelo próprio backend em `/docs`.
 
-| RF | RN associadas | Endpoint previsto | Método | Situação atual |
-|----|---------------|-------------------|--------|----------------|
-| RF001 | RN01 | `/provas` | GET | Não implementado; suporte parcial no banco por `prova.status` e `prova_status` |
-| RF002 | RN18, RN19 | `/auth/google`, `/auth/callback`, `/auth/session` | GET, GET, GET | Não implementado; suporte parcial no banco por `auth_user_id`, funções `auth_*` e RLS |
-| RF003 | RN20 | `/questoes` | GET | Não implementado; suporte no banco por `questao`, `tema`, `materia` e índices |
-| RF004 | RN03 | `/questoes` | POST, PATCH | Não implementado; suporte no banco por `enunciado.conteudo_latex` |
-| RF005 | RN03 | `/questoes` | POST, PATCH | Não implementado; suporte no banco por enum `questao_tipo` |
-| RF006 | RN04 | `/questoes/{id}` | PATCH | Não implementado; suporte no banco por `questao.permite_anexo` |
-| RF007 | RN05 | `/provas/{id}/configuracoes` | PATCH | Não implementado; suporte no banco por `tempo_limite_min`, `data_inicio` e `data_fim` |
-| RF008 | RN07 | `/provas/{id}/publicar` | POST | Não implementado; suporte no banco por `url_acesso`, `qr_code` e trigger de QR Code |
-| RF009 | RN08 | `/public/provas/{token}/identificacao` | POST | Não implementado; suporte no banco por `aluno` e `prova_aluno` |
-| RF010 | RN10 | Sem endpoint próprio | N/A | Recurso de frontend; não implementado no código atual |
-| RF011 | RN10 | Sem endpoint próprio | N/A | Recurso de frontend; não implementado no código atual |
-| RF012 | RN04 | `/respostas/{id}/anexos` | POST, GET | Não implementado; suporte no banco por `resposta_anexo` |
-| RF013 | RN11 | Sem endpoint próprio | N/A | Recurso client-side; não implementado no código atual |
-| RF014 | RN13 | `/provas/{id}/correcao/questoes/{questaoId}` | GET | Não implementado; suporte parcial no banco por `resposta_aluno` e `correcao` |
-| RF015 | RN13 | `/respostas/{id}/correcao` | POST, PATCH | Não implementado; suporte no banco por `correcao` e `feedback` |
-| RF016 | RN13 | `/respostas/{id}/anexos` | GET | Não implementado; suporte no banco por `resposta_anexo` |
-| RF017 | RN14 | `/provas/{id}/resultados/exportacao` | POST, GET | Não implementado; suporte no banco por `resultado_aluno`, `relatorio` e `exportacao_resultado` |
-| RF018 | RN17 | `/coordenador/provas` | GET | Não implementado; suporte parcial via RLS para coordenador |
-| RF019 | RN17 | `/coordenador/relatorios`, `/coordenador/analytics` | GET, GET | Não implementado; suporte no banco por `relatorio` e `avaliacao_log` |
-| RF020 | RN01 | `/coordenador/provas?status=` | GET | Não implementado; suporte no banco por índice `prova_status_index` |
-| RF021 | RN18 | `/provas`, `/provas/{id}` | POST, PATCH, DELETE | Não implementado; suporte no banco por tabela `prova`, FKs e RLS |
-| RF022 | RN02 | `/provas?turma=&semestre=&materiaId=&professorId=` | GET | Não implementado; suporte no banco por índice `prova_filtros_index` |
-| RF023 | RN06 | `/provas/{id}/configuracoes` | PATCH | Não implementado; suporte no banco por `embaralhar_questoes` e `embaralhar_alternativas` |
-| RF024 | RN09 | `/public/provas/{token}` | GET | Não implementado; suporte parcial no banco por `prova.instrucoes` e políticas `anon` |
-| RF025 | RN09 | Sem endpoint próprio | N/A | Recurso de frontend; não implementado no código atual |
-| RF026 | RN12 | `/provas-aluno/{id}/revisao`, `/provas-aluno/{id}/envio-final` | GET, POST | Não implementado; suporte no banco por `prova_aluno` e `resposta_aluno` |
-| RF027 | RN15 | `/provas/{id}/resultados/liberacao-email` | POST | Não implementado; suporte no banco por `email_envio` |
-| RF028 | RN16 | `/provas/{id}/anexos/exportacao` | POST, GET | Não implementado; suporte no banco por `exportacao_resultado` e `resposta_anexo` |
+| RF | RN associadas | Endpoint(s) implementado(s) | Método(s) | Situação atual |
+|----|---------------|-----------------------------|-----------|----------------|
+| RF001 | RN01 | `/api/v1/provas`, `/api/v1/provas/{provaId}`, `/api/v1/provas/{provaId}/status-historico`, `/api/v1/provas/{provaId}/encerrar`, `/api/v1/provas/{provaId}/arquivar` | GET, PUT, DELETE, POST | Implementado no backend; evidências em `prova.routes.ts`, `prova.controller.ts`, `prova.service.ts` e `prova.repository.ts`. |
+| RF002 | RN18, RN19 | `/api/v1/auth/google`, `/api/v1/auth/google/callback`, `/api/v1/auth/me`, `/api/v1/auth/logout` | GET, POST | Implementado no backend com OAuth Google/JWT e verificação de usuário interno cadastrado. |
+| RF003 | RN20 | `/api/v1/questoes`, `/api/v1/questoes/{questaoId}`, `/api/v1/provas/{provaId}/questoes` | GET, POST, PUT, DELETE | Implementado no backend; banco de questões pesquisável por matéria, tema, tipo, status e busca textual. |
+| RF004 | RN03 | `/api/v1/questoes`, `/api/v1/questoes/{questaoId}` | POST, PUT | Implementado no backend com enunciado em `conteudoLatex` validado por Zod e persistido em `enunciado.conteudo_latex`. |
+| RF005 | RN03 | `/api/v1/questoes`, `/api/v1/questoes/{questaoId}` | POST, PUT | Implementado no backend com tipos `multipla_escolha`, `verdadeiro_falso` e `discursiva`. |
+| RF006 | RN04 | `/api/v1/questoes`, `/api/v1/questoes/{questaoId}`, `/api/v1/public/respostas/{respostaId}/anexos` | POST, PUT | Implementado parcialmente: backend controla `permiteAnexo` e upload; galeria visual é responsabilidade do frontend. |
+| RF007 | RN05 | `/api/v1/provas/{provaId}/configuracoes`, `/api/v1/public/provas/{urlAcesso}`, `/api/v1/provas/{provaId}/encerrar` | PATCH, GET, POST | Implementado no backend; regras de período e encerramento ficam em service/repository. |
+| RF008 | RN07 | `/api/v1/provas/{provaId}/publicar` | POST | Implementado no backend; publicação gera URL única de acesso e payload de QR Code. |
+| RF009 | RN08 | `/api/v1/public/provas/{urlAcesso}/iniciar` | POST | Implementado no backend; aluno se identifica por nome, e-mail, CPF e aceite de termos. |
+| RF010 | RN10 | Sem endpoint próprio | N/A | Pendente no frontend; backend entrega os dados de questão/anexo necessários para visualização. |
+| RF011 | RN10 | `/api/v1/public/provas/{urlAcesso}/iniciar`, `/api/v1/questoes` | GET, POST | Implementado parcialmente no backend por armazenamento/retorno de LaTeX; renderização visual é frontend. |
+| RF012 | RN04 | `/api/v1/public/respostas/{respostaId}/anexos` | POST | Implementado no backend com multipart, validação de tipo e limite de tamanho. |
+| RF013 | RN11 | Sem endpoint próprio | N/A | Pendente no frontend; backend recebe anexos, mas compressão client-side não é função da WebAPI. |
+| RF014 | RN13 | `/api/v1/provas/{provaId}/correcao/questoes`, `/api/v1/provas/{provaId}/questoes/{questaoId}/respostas` | GET | Implementado no backend para correção por item. |
+| RF015 | RN13 | `/api/v1/respostas/{respostaId}/correcao` | PUT | Implementado no backend com nota, observação e feedback. |
+| RF016 | RN13 | `/api/v1/provas/{provaId}/questoes/{questaoId}/respostas`, `/api/v1/public/respostas/{respostaId}/anexos` | GET, POST | Implementado parcialmente: backend lista anexos junto das respostas; galeria visual é frontend. |
+| RF017 | RN14 | `/api/v1/provas/{provaId}/resultados`, `/api/v1/provas/{provaId}/resultados/exportar` | GET, POST | Implementado no backend com consolidação e exportação de resultados. |
+| RF018 | RN17 | `/api/v1/coordenador/provas` | GET | Implementado no backend com rota exclusiva de coordenador. |
+| RF019 | RN17 | `/api/v1/provas/{provaId}/analytics`, `/api/v1/logs` | GET, POST | Implementado no backend para métricas e auditoria. |
+| RF020 | RN01 | `/api/v1/coordenador/provas`, `/api/v1/provas?status=` | GET | Implementado no backend por querystring e rota de coordenador. |
+| RF021 | RN18 | `/api/v1/provas`, `/api/v1/provas/{provaId}` | POST, PUT, DELETE | Implementado no backend com autorização por perfil e regras de estado. |
+| RF022 | RN02 | `/api/v1/provas?turma=&semestre=&materiaId=&professorId=` | GET | Implementado no backend via querystring validada por Zod. |
+| RF023 | RN06 | `/api/v1/provas/{provaId}/configuracoes` | PATCH | Implementado no backend com flags de embaralhamento. |
+| RF024 | RN09 | `/api/v1/public/provas/{urlAcesso}` | GET | Implementado no backend para portal público de instruções. |
+| RF025 | RN09 | `/api/v1/public/provas/{urlAcesso}` | GET | Implementado parcialmente: API retorna tempo e instruções; controle visual do cronômetro é frontend. |
+| RF026 | RN12 | `/api/v1/public/provas-aluno/{provaAlunoId}/respostas`, `/api/v1/public/provas-aluno/{provaAlunoId}/enviar` | GET, PUT, POST | Implementado no backend com rascunho, respostas salvas e envio final. |
+| RF027 | RN15 | `/api/v1/provas/{provaId}/resultados/liberar-email`, `/api/v1/provas/{provaId}/emails`, `/api/v1/emails/{emailEnvioId}/reenviar` | POST, GET | Implementado no backend com histórico e reenvio. |
+| RF028 | RN16 | `/api/v1/provas/{provaId}/anexos/exportar` | POST | Implementado no backend para exportação de anexos. |
 
 ## 3.2. Arquitetura (sprints 1 a 5)
 
 ### 3.2.1. Diagrama de Arquitetura (sprints 3 e 4)
 
-O servidor do projeto adota uma Arquitetura em Camadas no estilo Controller-Service-Repository. Essa organização separa claramente as responsabilidades de entrada HTTP, lógica de negócio e acesso a dados, tornando o sistema mais modular, testável e fácil de manter.
+O backend segue Arquitetura em Camadas no padrão **Controller → Service → Repository → Model**, alinhado ao modelo de referência disponibilizado em `modelos-arquitetura-exemplo`. A separação impede que rotas HTTP acessem diretamente o banco e mantém as regras de negócio concentradas nas classes de serviço.
 
-#### a) Controllers (Ponto de entrada HTTP)
+```plantuml
+@startuml ArquiteturaEmCamadasCorrijeAi
+title Arquitetura em Camadas - Corrije Ai
 
-Os controllers recebem as requisições, validam parâmetros básicos, tratam exceções e retornam respostas HTTP.
+top to bottom direction
+skinparam shadowing false
+skinparam roundCorner 12
+skinparam componentStyle rectangle
 
-- `src/backend/dist/routes/questoes.routes.js`
-  - `questoesRoutes(app)` — registra a rota POST `/provas/:provaId/questoes` e encaminha a requisição ao controller.
-- `src/backend/dist/controllers/questoes.controller.js`
-  - `QuestoesController.criarQuestao(request, reply)` — valida campos obrigatórios (`tipo`, `enunciado`), chama o service responsável pela criação da questão e devolve o resultado ou erro apropriado.
+actor "Usuario\n(navegador / cliente HTTP)" as Cliente
 
-#### b) Services (Lógica de negócio)
+package "1. Controller" as L1 #E8F4FD {
+  [AuthController] as AuthC
+  [ProvaController] as ProvaC
+  [QuestaoController] as QuestaoC
+  [AlunoPortalController] as PortalC
+  [CorrecaoController] as CorrecaoC
+  [ResultadoController] as ResultadoC
+  [AnalyticsController] as AnalyticsC
+}
 
-Os services contêm regras de negócio, validações de domínio e orquestram chamadas aos repositories.
+package "2. Service" as L2 #FFF7E0 {
+  [AuthService] as AuthS
+  [ProvaService] as ProvaS
+  [QuestaoService] as QuestaoS
+  [AlunoPortalService] as PortalS
+  [CorrecaoService] as CorrecaoS
+  [ResultadoService] as ResultadoS
+  [AnalyticsService] as AnalyticsS
+}
 
-- `src/backend/dist/services/questoes.service.js`
-  - `QuestoesService.criarQuestao(input)` — valida o tipo da questão, o enunciado, a pontuação máxima e as alternativas; verifica se a prova existe e está em estado `rascunho`; transforma o tipo para uso no banco e delega a persistência ao repository.
-  - `QuestoesService.validarAlternativas(tipo, alternativas)` — valida o conjunto de alternativas para questões objetivas, garantindo pelo menos duas opções e exatamente uma correta.
-  - `AppError` — classe de exceção de domínio usada para propagar erros de validação com códigos HTTP específicos.
+package "3. Repository" as L3 #E8F8E8 {
+  [AuthRepository] as AuthR
+  [ProvaRepository] as ProvaR
+  [QuestaoRepository] as QuestaoR
+  [AlunoPortalRepository] as PortalR
+  [CorrecaoRepository] as CorrecaoR
+  [ResultadoRepository] as ResultadoR
+  [AnalyticsRepository] as AnalyticsR
+}
 
-#### c) Repositories (Persistência de dados)
+package "4. Model / Schema" as L4 #F3E8FF {
+  [Professor]
+  [Coordenador]
+  [Prova]
+  [Questao]
+  [ProvaAluno]
+  [RespostaAluno]
+  [Correcao]
+  [ResultadoAluno]
+}
 
-Os repositories encapsulam as consultas SQL e as transações no banco PostgreSQL.
+database "PostgreSQL / Supabase\n(migrations SQL, triggers, RLS)" as DB
 
-- `src/backend/dist/repositories/questoes.repository.js`
-  - `QuestoesRepository.findProvaById(provaId)` — busca a prova pelo ID.
-  - `QuestoesRepository.criarQuestao(input)` — inicia uma transação, busca a prova com lock, insere a questão, o enunciado e as alternativas, associa a questão à prova e finaliza a transação.
-  - `QuestoesRepository.findProvaByIdForUpdate(client, provaId)` — busca a prova com `FOR UPDATE` para evitar condições de concorrência.
-  - `QuestoesRepository.nextOrdemOriginal(client, provaId)` — calcula a próxima ordem original da questão na prova.
-  - `QuestoesRepository.insertAlternativas(client, questaoId, input)` — insere alternativas e ajusta o modo de replicação quando necessário.
+Cliente -down-> AuthC
+Cliente -down-> ProvaC
+Cliente -down-> QuestaoC
+Cliente -down-> PortalC
+Cliente -down-> CorrecaoC
+Cliente -down-> ResultadoC
+Cliente -down-> AnalyticsC
 
-#### d) Modelo de dados
+AuthC -down-> AuthS
+ProvaC -down-> ProvaS
+QuestaoC -down-> QuestaoS
+PortalC -down-> PortalS
+CorrecaoC -down-> CorrecaoS
+ResultadoC -down-> ResultadoS
+AnalyticsC -down-> AnalyticsS
 
-A camada de dados é representada pelas tabelas consultadas no banco PostgreSQL. As principais entidades envolvidas são:
+AuthS -down-> AuthR
+ProvaS -down-> ProvaR
+QuestaoS -down-> QuestaoR
+PortalS -down-> PortalR
+CorrecaoS -down-> CorrecaoR
+ResultadoS -down-> ResultadoR
+AnalyticsS -down-> AnalyticsR
 
-- `prova`
-- `questao`
-- `enunciado`
-- `alternativa`
-- `prova_questao`
+ProvaS ..> QuestaoR : vinculos de questoes
+CorrecaoS ..> ProvaR : permissao e pontuacao
+ResultadoS ..> CorrecaoR : consolidacao de notas
 
-> Observação: o backend não usa views server-side no padrão MVC tradicional. A interface do usuário é implementada no frontend separado, enquanto o servidor fornece APIs organizadas em camadas.
+AuthR -down-> DB
+ProvaR -down-> DB
+QuestaoR -down-> DB
+PortalR -down-> DB
+CorrecaoR -down-> DB
+ResultadoR -down-> DB
+AnalyticsR -down-> DB
+@enduml
+```
+
+| Camada | O que faz | O que não faz | Evidências no código |
+|---|---|---|---|
+| Controller | Recebe requisições HTTP, aciona services e retorna status/body padronizados. | Não executa SQL e não concentra regras de negócio. | `src/backend/src/controllers`, `src/backend/src/routes` |
+| Service | Aplica regras de negócio, valida transições e orquestra repositories. | Não conhece detalhes de renderização do frontend nem monta SQL diretamente. | `src/backend/src/services` |
+| Repository | Encapsula SQL, transações e mapeamento entre banco e objetos de resposta. | Não decide autorização de rota nem trata protocolo HTTP. | `src/backend/src/repositories`, `src/backend/src/database/transaction.ts` |
+| Model / Schema | Representa contratos de entrada/saída e entidades persistidas nas migrations. | Não acessa banco diretamente. | `src/backend/src/schemas`, `src/backend/src/database/migrations/migration.sql` |
+
+Essa organização é observável nas rotas principais do artefato: `/api/v1/provas` passa por `ProvaController`, `ProvaService` e `ProvaRepository`; `/api/v1/questoes` passa por `QuestaoController`, `QuestaoService` e `QuestaoRepository`; `/api/v1/public/provas/{urlAcesso}` passa por `AlunoPortalController`, `AlunoPortalService` e `AlunoPortalRepository`.
 
 ### 3.2.2. Diagrama de Casos de Uso
 
@@ -2295,192 +2355,191 @@ A camada de dados é representada pelas tabelas consultadas no banco PostgreSQL.
 
 ---
 
-### 3.2.3. Diagrama de Classes do Domínio (sprint 2)
+### 3.2.3. Diagrama de Classes do Dominio (sprint 2)
 
-O diagrama de classes a seguir representa a modelagem completa do domínio da plataforma de avaliações, contemplando aproximadamente 20 entidades distribuídas nos módulos de pessoas (Pessoa, Aluno, Professor, Coordenador), provas (Prova, Enunciado, Alternativa, Matéria), realização (ProvaAluno, RespostaAluno) e correção (Correcao, Feedback, Relatorio). Foram modeladas relações de herança (generalização via triângulo vazio), associação simples (linha contínua), agregação (losango vazio) e composição (losango cheio), todas com multiplicidades explícitas. O diagrama foi desenvolvido em PlantUML e segue as notações UML padrão.
+O diagrama de dominio abaixo foi alinhado ao backend atual e a migration src/backend/src/database/migrations/migration.sql. Coordenador, professor e aluno sao entidades/tabelas independentes. A composicao da prova usa prova_questao, a tentativa do aluno usa prova_aluno, os anexos usam resposta_anexo e a exportacao/resultado/e-mail usam tabelas proprias.
 
-```plantuml
-@startuml DiagramaDeClasses
+~~~plantuml
+@startuml DiagramaDeClassesDominioAtual
 skinparam classAttributeIconSize 0
-skinparam classFontSize 11
-skinparam classBackgroundColor #F0F4FF
-skinparam classBorderColor #3A6BC7
-skinparam arrowColor #333333
+skinparam linetype ortho
 
-package "Pessoas" #EAF0FB {
-
-  abstract class Pessoa {
-    - id : UUID
-    - nome : VARCHAR(150)
-    - email : VARCHAR(255)
-    - ativo : BOOLEAN
-    - criado_em : TIMESTAMPTZ
-    + autenticar() : void
-    + validarEmail() : boolean
-  }
-
-  class Aluno {
-    - cpf : VARCHAR(14)
-    + acessarProva(link : UUID) : void
-    + enviarResposta() : void
+package "Identidade e acesso" {
+  class Coordenador {
+    +id: UUID
+    +auth_user_id: UUID
+    +nome: string
+    +email: string
   }
 
   class Professor {
-    + criarProva() : Prova
-    + publicarProva(prova : Prova) : void
-    + corrigirResposta(resp : RespostaAluno) : Correcao
+    +id: UUID
+    +auth_user_id: UUID
+    +coordenador_id: UUID
+    +nome: string
+    +email: string
   }
 
-  class Coordenador {
-    + gerarRelatorio(prova : Prova) : Relatorio
-    + exportarResultados(prova : Prova) : File
-    + visualizarAnalytics() : void
+  class Aluno {
+    +id: UUID
+    +nome: string
+    +email: string
+    +cpf: string
+    +aceitou_termos_em: timestamptz
   }
-
-  Pessoa <|-- Aluno
-  Pessoa <|-- Professor
-  Pessoa <|-- Coordenador
 }
 
-package "Provas" #EBF5EB {
-
+package "Catalogo e questoes" {
   class Materia {
-    - id : UUID
-    - nome : VARCHAR(120)
-    - codigo : VARCHAR(30)
-    - criado_em : TIMESTAMPTZ
+    +id: UUID
+    +nome: string
+    +codigo: string
   }
 
-  class Prova {
-    - id : UUID
-    - titulo : VARCHAR(180)
-    - descricao : TEXT
-    - modalidade : VARCHAR(60)
-    - turma : VARCHAR(80)
-    - semestre : VARCHAR(20)
-    - status : VARCHAR(20)
-    - duracao_minutos : INTEGER
-    - inicio_agendado : TIMESTAMPTZ
-    - fim_agendado : TIMESTAMPTZ
-    - embaralhar_questoes : BOOLEAN
-    - link_publicacao : UUID
-    - qr_code_url : TEXT
-    - criado_em : TIMESTAMPTZ
-    + publicar() : void
-    + encerrar() : void
-    + gerarLink() : UUID
+  class MateriaProfessor {
+    +materia_id: UUID
+    +professor_id: UUID
+  }
+
+  class Tema {
+    +id: UUID
+    +materia_id: UUID
+    +nome: string
+  }
+
+  class Questao {
+    +id: UUID
+    +materia_id: UUID
+    +tema_id: UUID
+    +tipo: questao_tipo
+    +permite_anexo: boolean
+    +ativa: boolean
   }
 
   class Enunciado {
-    - id : UUID
-    - tipo : VARCHAR(30)
-    - texto : TEXT
-    - pontos : DECIMAL(6,2)
-    - limite_caracteres : INTEGER
-    - permite_upload : BOOLEAN
-    - ativo : BOOLEAN
-    - criado_em : TIMESTAMPTZ
-    + renderizarLatex() : String
+    +id: UUID
+    +questao_id: UUID
+    +conteudo_latex: text
+    +url_imagem: text
   }
 
   class Alternativa {
-    - id : UUID
-    - texto : TEXT
-    - correta : BOOLEAN
-    - ordem : INTEGER
-    - criado_em : TIMESTAMPTZ
+    +id: UUID
+    +questao_id: UUID
+    +texto: text
+    +correta: boolean
+    +ordem: integer
   }
-
-  Enunciado "1" *-- "0..*" Alternativa : possui >
 }
 
-package "Realização" #FFF8EC {
+package "Provas e aplicacao" {
+  class Prova {
+    +id: UUID
+    +professor_id: UUID
+    +materia_id: UUID
+    +status: prova_status
+    +url_acesso: UUID
+    +qr_code: text
+  }
+
+  class ProvaStatusHistorico {
+    +id: UUID
+    +prova_id: UUID
+    +status_anterior: prova_status
+    +status_novo: prova_status
+  }
+
+  class ProvaQuestao {
+    +prova_id: UUID
+    +questao_id: UUID
+    +ordem: integer
+    +pontuacao_max: numeric
+  }
 
   class ProvaAluno {
-    - id : UUID
-    - status : VARCHAR(20)
-    - iniciado_em : TIMESTAMPTZ
-    - enviado_em : TIMESTAMPTZ
-    - nota_total : DECIMAL(6,2)
-    - criado_em : TIMESTAMPTZ
-    + calcularNota() : DECIMAL
+    +id: UUID
+    +prova_id: UUID
+    +aluno_id: UUID
+    +status: prova_aluno_status
   }
 
   class RespostaAluno {
-    - id : UUID
-    - texto_resposta : TEXT
-    - rascunho : BOOLEAN
-    - criado_em : TIMESTAMPTZ
-    - atualizado_em : TIMESTAMPTZ
-    + salvarRascunho() : void
-    + enviarFinal() : void
+    +id: UUID
+    +prova_aluno_id: UUID
+    +questao_id: UUID
+    +alternativa_id: UUID
+    +resposta_texto: text
   }
 
-  class ArquivoResposta {
-    - id : UUID
-    - url : TEXT
-    - nome_original : VARCHAR(255)
-    - tipo_mime : VARCHAR(50)
-    - tamanho_bytes : INTEGER
-    - ordem : INTEGER
-    - criado_em : TIMESTAMPTZ
-    + validarTamanho() : boolean
-    + validarTipoMime() : boolean
+  class RespostaAnexo {
+    +id: UUID
+    +resposta_id: UUID
+    +nome_arquivo: string
+    +storage_path: text
   }
-
-  ProvaAluno "1" *-- "0..*" RespostaAluno : gera >
-  RespostaAluno "1" *-- "0..*" ArquivoResposta : anexa >
 }
 
-package "Correção" #FFF0F0 {
-
+package "Correcao e resultados" {
   class Correcao {
-    - id : UUID
-    - nota : DECIMAL(6,2)
-    - observacao : TEXT
-    - status : VARCHAR(20)
-    - corrigida_em : TIMESTAMPTZ
-    - criado_em : TIMESTAMPTZ
-    + aplicarNota(valor : DECIMAL) : void
-    + recalcular() : void
+    +id: UUID
+    +resposta_id: UUID
+    +professor_id: UUID
+    +nota: numeric
+    +tipo: string
   }
 
   class Feedback {
-    - id : UUID
-    - mensagem : TEXT
-    - criado_em : TIMESTAMPTZ
+    +id: UUID
+    +correcao_id: UUID
+    +mensagem: text
   }
 
-  class Relatorio {
-    - id : UUID
-    - titulo : VARCHAR(180)
-    - conteudo : TEXT
-    - arquivo_url : TEXT
-    - gerado_em : TIMESTAMPTZ
-    + exportarExcel() : File
+  class ResultadoAluno {
+    +prova_aluno_id: UUID
+    +nota_total: numeric
+    +percentual: numeric
   }
 
-  Correcao "1" *-- "0..*" Feedback : possui >
+  class ExportacaoResultado {
+    +id: UUID
+    +prova_id: UUID
+    +formato: exportacao_formato
+  }
+
+  class EmailEnvio {
+    +id: UUID
+    +prova_aluno_id: UUID
+    +status: email_status
+  }
+
+  class AvaliacaoLog {
+    +id: UUID
+    +prova_id: UUID
+    +acao: string
+  }
 }
 
-' RELACIONAMENTOS ENTRE PACKAGES
-
-Professor "1" --> "0..*" Prova : elabora
-Professor "0..*" -- "0..*" Materia : leciona
-Prova "0..*" -- "0..*" Materia : aborda
-Prova "0..*" o-- "0..*" Enunciado : contém (via ProvaEnunciado)
-Aluno "1" --> "0..*" ProvaAluno : realiza
-Prova "1" --> "0..*" ProvaAluno : é aplicada a
-Enunciado "1" --> "0..*" RespostaAluno : é respondido em
-Alternativa "0..1" --> "0..*" RespostaAluno : é marcada em
-RespostaAluno "1" *-- "0..1" Correcao : recebe >
-Correcao "0..*" --> "1" Enunciado : referencia >
-Professor "1" --> "0..*" Correcao : realiza
-Professor "1" --> "0..*" Feedback : escreve
-Coordenador "1" --> "0..*" Relatorio : gera
-Prova "1" --> "0..*" Relatorio : baseia
+Coordenador "1" -- "0..*" Professor
+Professor "0..*" -- "0..*" Materia : materia_professor
+Materia "1" -- "0..*" Tema
+Materia "1" -- "0..*" Questao
+Materia "1" -- "0..*" Prova
+Questao "1" -- "1" Enunciado
+Questao "1" -- "0..*" Alternativa
+Prova "0..*" -- "0..*" Questao : prova_questao
+Prova "1" -- "0..*" ProvaStatusHistorico
+Prova "1" -- "0..*" ProvaAluno
+Aluno "1" -- "0..*" ProvaAluno
+ProvaAluno "1" -- "0..*" RespostaAluno
+RespostaAluno "1" -- "0..*" RespostaAnexo
+RespostaAluno "1" -- "0..1" Correcao
+Correcao "1" -- "0..*" Feedback
+ProvaAluno "1" -- "0..1" ResultadoAluno
+Prova "1" -- "0..*" ExportacaoResultado
+ProvaAluno "1" -- "0..*" EmailEnvio
+Prova "1" -- "0..*" AvaliacaoLog
 @enduml
-```
+~~~
 
 #### 3.2.3.1 Diagrama de Classes Arquitetural
 
@@ -2492,52 +2551,58 @@ skinparam classAttributeIconSize 0
 package "Controller" #D6EAF8 {
   class AuthController
   class ProfessorController
-  class CoordenadorController
+  class ProvaController
   class MateriaController
   class TemaController
   class AlunoController
+  class AlunoPortalController
   class QuestaoController
-  class ProvaController
-  class ProvaAlunoController
+  class ProvaQuestaoController
+  class RespostaAlunoController
+  class RespostaAnexoController
   class CorrecaoController
   class ResultadoController
-  class RelatorioController
-  class EmailController
+  class AnexoExportarController
+  class EmailResultadoController
   class AnalyticsController
 }
 
 package "Service" #FEF9E7 {
   class AuthService
   class ProfessorService
-  class CoordenadorService
   class MateriaService
   class TemaService
   class AlunoService
+  class AlunoPortalService
   class QuestaoService
   class ProvaService
-  class ProvaAlunoService
+  class ProvaQuestaoService
+  class RespostaAlunoService
+  class RespostaAnexoService
   class CorrecaoService
   class ResultadoService
-  class RelatorioService
-  class EmailService
+  class AnexoExportarService
+  class EmailResultadoService
   class AnalyticsService
 }
 
 package "Repository" #E8F8E8 {
   class AuthRepository
   class ProfessorRepository
-  class CoordenadorRepository
   class MateriaRepository
   class TemaRepository
   class AlunoRepository
+  class AlunoPortalRepository
   class QuestaoRepository
   class ProvaRepository
-  class ProvaAlunoRepository
+  class ProvaQuestaoRepository
+  class RespostaAlunoRepository
+  class RespostaAnexoRepository
   class CorrecaoRepository
   class ResultadoRepository
-  class RelatorioRepository
-  class EmailRepository
-  class LogRepository
+  class AnexoExportarRepository
+  class EmailEnvioRepository
+  class AvaliacaoLogRepository
 }
 
 package "Model" #FDEDEC {
@@ -2567,35 +2632,40 @@ Repository ..> Model
 
 ```plantuml
 @startuml Controllers
-class ProvaAlunoController {
-  + iniciar()
-  + salvarRascunho()
-  + enviarResposta()
-  + submeterProva()
-  + uploadAnexo()
+class AlunoPortalController {
+  + obterProvaPublica()
+  + iniciarProva()
+}
+
+class RespostaAlunoController {
+  + salvar()
+  + listar()
+  + enviar()
+}
+
+class RespostaAnexoController {
+  + upload()
 }
 
 class CorrecaoController {
+  + listarQuestoes()
+  + executarObjetivas()
   + listarRespostasPorQuestao()
-  + corrigirManual()
-  + corrigirAutomatico()
-  + adicionarFeedback()
+  + salvar()
 }
 
 class ResultadoController {
-  + calcular()
-  + listar()
+  + listarPorProva()
+  + exportar()
+}
+
+class AnexoExportarController {
+  + exportar()
+}
+
+class EmailResultadoController {
   + liberar()
-  + exportarExcel()
-}
-
-class RelatorioController {
-  + listar()
-  + gerar()
-}
-
-class EmailController {
-  + enviar()
+  + listarEnvios()
   + reenviar()
 }
 
@@ -2608,31 +2678,37 @@ class AnalyticsController {
 package "Services" {
   class AuthService
   class ProfessorService
-  class CoordenadorService
   class MateriaService
   class TemaService
+  class AlunoService
+  class AlunoPortalService
   class QuestaoService
   class ProvaService
-  class ProvaAlunoService
+  class ProvaQuestaoService
+  class RespostaAlunoService
+  class RespostaAnexoService
   class CorrecaoService
   class ResultadoService
-  class RelatorioService
-  class EmailService
+  class AnexoExportarService
+  class EmailResultadoService
   class AnalyticsService
 }
 
 AuthController ..> AuthService
 ProfessorController ..> ProfessorService
-CoordenadorController ..> CoordenadorService
 MateriaController ..> MateriaService
 TemaController ..> TemaService
+AlunoController ..> AlunoService
+AlunoPortalController ..> AlunoPortalService
 QuestaoController ..> QuestaoService
 ProvaController ..> ProvaService
-ProvaAlunoController ..> ProvaAlunoService
+ProvaQuestaoController ..> ProvaQuestaoService
+RespostaAlunoController ..> RespostaAlunoService
+RespostaAnexoController ..> RespostaAnexoService
 CorrecaoController ..> CorrecaoService
 ResultadoController ..> ResultadoService
-RelatorioController ..> RelatorioService
-EmailController ..> EmailService
+AnexoExportarController ..> AnexoExportarService
+EmailResultadoController ..> EmailResultadoService
 AnalyticsController ..> AnalyticsService
 
 @enduml
@@ -2642,18 +2718,17 @@ AnalyticsController ..> AnalyticsService
 @startuml Services
 
 class ResultadoService {
-  + calcularNotaTotal()
-  + liberarResultados()
-  + exportarExcel()
+  + listarPorProva()
+  + exportar()
 }
 
-class RelatorioService {
-  + gerar()
-  + gerarConteudo()
+class AnexoExportarService {
+  + exportar()
 }
 
-class EmailService {
-  + enviarResultados()
+class EmailResultadoService {
+  + liberar()
+  + listarEnvios()
   + reenviar()
 }
 
@@ -2668,12 +2743,15 @@ package "Repositories" {
   class TemaRepository
   class QuestaoRepository
   class ProvaRepository
-  class ProvaAlunoRepository
+  class ProvaQuestaoRepository
+  class AlunoPortalRepository
+  class RespostaAlunoRepository
+  class RespostaAnexoRepository
   class CorrecaoRepository
   class ResultadoRepository
-  class RelatorioRepository
-  class EmailRepository
-  class LogRepository
+  class AnexoExportarRepository
+  class EmailEnvioRepository
+  class AvaliacaoLogRepository
 }
 
 QuestaoService ..> QuestaoRepository
@@ -2683,23 +2761,25 @@ QuestaoService ..> TemaRepository
 ProvaService ..> ProvaRepository
 ProvaService ..> QuestaoRepository
 
-ProvaAlunoService ..> ProvaAlunoRepository
-ProvaAlunoService ..> ProvaRepository
+ProvaQuestaoService ..> ProvaQuestaoRepository
+AlunoPortalService ..> AlunoPortalRepository
+RespostaAlunoService ..> RespostaAlunoRepository
+RespostaAnexoService ..> RespostaAnexoRepository
 
 CorrecaoService ..> CorrecaoRepository
-CorrecaoService ..> ProvaAlunoRepository
+CorrecaoService ..> RespostaAlunoRepository
 
 ResultadoService ..> ResultadoRepository
 ResultadoService ..> CorrecaoRepository
 
-RelatorioService ..> RelatorioRepository
-EmailService ..> EmailRepository
-AnalyticsService ..> LogRepository
+AnexoExportarService ..> AnexoExportarRepository
+EmailResultadoService ..> EmailEnvioRepository
+AnalyticsService ..> AvaliacaoLogRepository
 
 ProvaService ..> QuestaoService
-CorrecaoService ..> ProvaAlunoService
+CorrecaoService ..> RespostaAlunoService
 ResultadoService ..> CorrecaoService
-RelatorioService ..> ResultadoService
+EmailResultadoService ..> ResultadoService
 
 @enduml
 ```
@@ -2733,14 +2813,6 @@ class ProfessorRepository {
   + save()
   + update()
   + delete()
-}
-
-class CoordenadorRepository {
-  + findById()
-  + findAll()
-  + findByEmail()
-  + save()
-  + update()
 }
 
 class MateriaRepository {
@@ -2788,11 +2860,26 @@ class ProvaRepository {
   + updateStatus()
 }
 
-class ProvaAlunoRepository {
+class ProvaQuestaoRepository {
+  + adicionar()
+  + listar()
+  + remover()
+}
+
+class AlunoPortalRepository {
+  + obterProvaPublica()
+  + iniciarProva()
+}
+
+class RespostaAlunoRepository {
   + findById()
   + save()
   + update()
   + saveResposta()
+}
+
+class RespostaAnexoRepository {
+  + findResposta()
   + saveAnexo()
 }
 
@@ -2813,19 +2900,17 @@ class ResultadoRepository {
   + saveExportacao()
 }
 
-class RelatorioRepository {
+class AnexoExportarRepository {
+  + listarAnexosPorProva()
+}
+
+class EmailEnvioRepository {
   + findById()
   + save()
   + update()
 }
 
-class EmailRepository {
-  + findById()
-  + save()
-  + update()
-}
-
-class LogRepository {
+class AvaliacaoLogRepository {
   + save()
   + findByProva()
   + findByAcao()
@@ -2861,7 +2946,6 @@ AuthRepository ..> Professor
 AuthRepository ..> Coordenador
 
 ProfessorRepository ..> Professor
-CoordenadorRepository ..> Coordenador
 
 MateriaRepository ..> Materia
 TemaRepository ..> Tema
@@ -2873,9 +2957,12 @@ QuestaoRepository ..> Alternativa
 
 ProvaRepository ..> Prova
 
-ProvaAlunoRepository ..> ProvaAluno
-ProvaAlunoRepository ..> RespostaAluno
-ProvaAlunoRepository ..> RespostaAnexo
+ProvaQuestaoRepository ..> Prova
+ProvaQuestaoRepository ..> Questao
+AlunoPortalRepository ..> ProvaAluno
+AlunoPortalRepository ..> Aluno
+RespostaAlunoRepository ..> RespostaAluno
+RespostaAnexoRepository ..> RespostaAnexo
 
 CorrecaoRepository ..> Correcao
 CorrecaoRepository ..> Feedback
@@ -2883,11 +2970,11 @@ CorrecaoRepository ..> Feedback
 ResultadoRepository ..> ResultadoAluno
 ResultadoRepository ..> ExportacaoResultado
 
-RelatorioRepository ..> Relatorio
+AnexoExportarRepository ..> RespostaAnexo
 
-EmailRepository ..> EmailEnvio
+EmailEnvioRepository ..> EmailEnvio
 
-LogRepository ..> AvaliacaoLog
+AvaliacaoLogRepository ..> AvaliacaoLog
 
 @enduml
 ```
@@ -3380,235 +3467,86 @@ end
 
 *Diagrama UML de deployment mostrando nós físicos, artefatos e canais de comunicação. Representa a visão Engineering + Technology do RM-ODP.*
 
-### 3.2.7. Padrões de Projeto Aplicados (sprints 3 a 5)
+### 3.2.7. Padroes de Projeto Aplicados (sprints 3 a 5)
 
-Esta seção documenta os padrões de projeto adotados no backend da plataforma do Instituto Ponte, justificando cada decisão com base em uma necessidade real identificada durante o desenvolvimento. Para cada padrão, são indicados os princípios SOLID que o sustentam, os requisitos funcionais e regras de negócio relacionados, e o impacto concreto sobre a qualidade e a manutenibilidade do sistema.
+Esta secao registra apenas padroes que aparecem no backend atual. A evidencia esta em src/backend/src/controllers, src/backend/src/services, src/backend/src/repositories, src/backend/src/schemas, src/backend/src/middlewares/auth.ts, src/backend/src/database/pool.ts e src/backend/src/database/migrations/migration.sql.
 
----
+#### 1. Repository Pattern
 
-### 1. Repository Pattern
+Os repositories concentram SQL e isolam PostgreSQL/Supabase do restante da aplicacao. Controllers e services chamam classes como ProfessorRepository, ProvaRepository, QuestaoRepository, ProvaQuestaoRepository, AlunoPortalRepository, RespostaAlunoRepository, RespostaAnexoRepository, CorrecaoRepository, ResultadoRepository, EmailEnvioRepository e AvaliacaoLogRepository.
 
-**Descrição**
+- Necessidade: manter JOINs, filtros, UPSERTs, paginacao, RLS e constraints fora da camada HTTP.
+- Evidencia: QuestaoRepository.findMany, ProvaRepository.findMany, CorrecaoRepository.corrigirObjetivas e ProvaQuestaoRepository.remover.
+- Requisitos: RF001, RF003, RF009, RF012, RF014, RF017, RF027 e RF028.
 
-O padrão Repository isola toda a lógica de acesso ao banco de dados em classes dedicadas — `ProfessorRepository`, `ProvaRepository`, `ProvaAlunoRepository`, `CorrecaoRepository`, entre outros — de modo que nenhuma outra camada da aplicação escreve SQL diretamente. O restante do sistema interage com essas classes por meio de métodos com nomes expressivos de domínio, como `findByLink`, `findRespostasPorQuestao` e `upsert`.
+#### 2. Service Layer
 
-**Necessidade real**
+A camada de service concentra regra de negocio e orquestra repositories. ProvaService decide transicoes de status; QuestaoService valida edicao de questoes; AlunoPortalService inicia prova publica; RespostaAlunoService salva e envia respostas; CorrecaoService corrige; ResultadoService consolida notas; EmailResultadoService libera resultados por e-mail; AnalyticsService registra eventos.
 
-O banco de dados do projeto utiliza PostgreSQL com Supabase, com múltiplas tabelas interligadas por chaves estrangeiras e triggers de validação (`validar_professor_materia_prova`, `validar_transicao_e_publicacao_prova`, entre outros). Sem um repositório intermediário, os serviços precisariam conhecer a estrutura física do banco — nomes de colunas, JOINs, condições de unicidade —, criando um acoplamento que tornaria qualquer alteração de schema (como a remoção da tabela `aluno` documentada em 20/05/2026 nos registros do projeto) um trabalho de refatoração amplo e arriscado.
+- Necessidade: impedir que controllers conhecam regras como prova editavel somente em rascunho, aluno unico por prova, limites de pontuacao, envio final e autorizacao por vinculo professor/materia.
+- Evidencia: controllers chamam services, services chamam repositories e as rotas retornam envelopes padronizados.
+- Requisitos: RF001, RF007, RF008, RF009, RF014, RF015, RF017, RF019, RF027.
 
-**Requisitos relacionados**: RF001, RF002, RF003, RF009, RF014, RF017, RF019 — todos os requisitos que envolvem persistência de dados.
+#### 3. DTO e validacao por schema Zod
 
-**Regras relacionadas**: RN01, RN07, RN08, RN14, RN16, RN18.
+Os schemas em src/backend/src/schemas definem params, querystring, body e response usados nas rotas Fastify por fastify-type-provider-zod. Entradas invalidas sao rejeitadas antes de chegar aos services, com status 422 e erro padronizado.
 
-**Princípios SOLID aplicados**
+- Evidencia: createProvaBodySchema, updateProvaConfiguracoesBodySchema, createQuestaoBodySchema, iniciarProvaBodySchema, salvarRespostaBodySchema, salvarCorrecaoBodySchema e schemas de resultado/e-mail.
+- Requisitos: RF004, RF005, RF006, RF007, RF009, RF012, RF015.
 
-- **S — Responsabilidade Única**: cada repositório é responsável exclusivamente pelo acesso a dados de uma entidade ou agregado específico.
-- **D — Inversão de Dependência**: os serviços dependem de abstrações (`IProvaRepository`) em vez de implementações concretas baseadas em `pg.Pool`, facilitando a troca de banco de dados em testes ou em migrações futuras.
+#### 4. Strategy para correcao
 
----
+O dominio de correcao usa duas estrategias comprovaveis: correcao automatica de objetivas e correcao manual de discursivas. CorrecaoRepository.corrigirObjetivas calcula nota em lote com CASE WHEN e ON CONFLICT; a correcao manual recebe nota, observacao e feedback do professor.
 
-### 2. Service Layer (Camada de Serviço)
+- Evidencia: POST /api/v1/provas/:provaId/correcao/objetivas e PUT /api/v1/respostas/:respostaId/correcao.
+- Requisitos: RF014, RF015, RN13.
 
-**Descrição**
+#### 5. State para ciclo de vida
 
-Toda regra de negócio da aplicação reside em classes de serviço — `ProvaService`, `CorrecaoService`, `ProvaAlunoService`, `ResultadoService` etc. — que orquestram chamadas a repositórios, aplicam validações de domínio e retornam resultados enriquecidos para os controladores. Os controladores apenas traduzem requisições HTTP em chamadas de serviço e devolvem as respostas ao cliente.
+Prova percorre rascunho, publicada, encerrada e antiga. ProvaService.publicar, ProvaService.encerrar e ProvaService.arquivar executam transicoes; a migration reforca regras com validar_transicao_e_publicacao_prova_trigger e prova_status_historico. O fluxo do aluno usa prova_aluno.status, AlunoPortalService e RespostaAlunoService.
 
-**Necessidade real**
+- Evidencia: POST /api/v1/provas/:provaId/publicar, /encerrar, /arquivar e POST /api/v1/public/provas-aluno/:provaAlunoId/enviar.
+- Requisitos: RF001, RF007, RF008, RF020, RF026, RN01, RN05, RN12.
 
-A plataforma possui regras de negócio complexas: uma prova só pode ser publicada se tiver questões completas com enunciados, alternativas corretamente configuradas, período definido e professor vinculado à matéria (RN01, RN03, RN18). Sem uma camada de serviço, essas validações seriam duplicadas em diferentes controladores (o da prova, o do professor, o do coordenador), violando o princípio DRY e gerando inconsistências. O `ProvaService.publicar()` centraliza toda essa lógica em um único ponto auditável.
+#### 6. Chain of Responsibility em auth
 
-**Requisitos relacionados**: RF001, RF002, RF005, RF007, RF008, RF014 e todos os demais que envolvem regras de fluxo.
+Rotas protegidas passam por leitura do token, montagem do usuario autenticado e validacao de perfil por requireRole. A cadeia retorna 401 quando nao ha autenticacao valida e 403 quando o perfil nao pode executar a acao.
 
-**Regras relacionadas**: RN01, RN03, RN04, RN05, RN06, RN07, RN08, RN09, RN12, RN13, RN14, RN17, RN18, RN19, RN20.
+- Evidencia: src/backend/src/middlewares/auth.ts aplicado em provas, questoes, correcao, resultados, e-mails, analytics, cadastros e coordenador.
+- Requisitos: RF002, RF018, RF019, RF021, RN18, RN19.
 
-**Princípios SOLID aplicados**
+#### 7. Singleton do pool PostgreSQL
 
-- **S — Responsabilidade Única**: o controlador cuida do protocolo HTTP; o serviço cuida da lógica de negócio; o repositório cuida da persistência.
-- **O — Aberto/Fechado**: um novo fluxo de validação (ex.: limite de questões por prova) pode ser adicionado ao serviço sem modificar controladores ou repositórios.
+src/backend/src/database/pool.ts exporta uma unica instancia de pg.Pool configurada por DATABASE_URL. Repositories reutilizam o mesmo pool e evitam abrir conexoes por requisicao.
 
----
+- Evidencia: imports de pool nos repositories e helper withTransaction.
+- Requisitos: RNF desempenho e capacidade.
 
-### 3. DTO com Validação por Schema (Zod)
+#### 8. Observer por triggers, logs e analytics
 
-**Descrição**
+A migration contem triggers que reagem a eventos de escrita: set_atualizado_em, registrar_status_prova, gerar_qr_code_prova e triggers de validacao. Na aplicacao, AnalyticsService e AvaliacaoLogRepository registram eventos por POST /api/v1/logs.
 
-Todos os dados de entrada da API são validados por schemas Zod antes de chegarem ao serviço. O `fastify-type-provider-zod` integra os schemas diretamente ao roteamento do Fastify, garantindo que uma requisição malformada seja rejeitada na borda da aplicação, com mensagem de erro padronizada, sem nunca alcançar a camada de serviço.
+- Evidencia: avaliacao_log, prova_status_historico e triggers em migration.sql.
+- Requisitos: RF008, RF019, RF020, RN07, RN17.
 
-**Necessidade real**
+#### 9. Facade em services compostos
 
-A plataforma coleta dados pessoais de alunos (nome, CPF, e-mail) em conformidade com a LGPD (RF009, US08 CR-02), além de receber uploads de arquivos, LaTeX e configurações de tempo de prova. Sem validação centralizada, cada serviço precisaria tratar entradas inválidas individualmente, aumentando o risco de injeção de dados maliciosos no banco, violando o RNF de Segurança e quebrando constraints do PostgreSQL em runtime com mensagens de erro opacas para o cliente.
+ResultadoService, EmailResultadoService, AnexoExportarService e AlunoPortalService escondem orquestracoes de varios repositories atras de metodos simples para os controllers.
 
-**Requisitos relacionados**: RF004, RF005, RF006, RF007, RF009, RF012 e todos os endpoints de criação e atualização.
+- Evidencia: GET /api/v1/provas/:provaId/resultados, POST /api/v1/provas/:provaId/resultados/exportar, POST /api/v1/provas/:provaId/resultados/liberar-email e POST /api/v1/provas/:provaId/anexos/exportar.
+- Requisitos: RF017, RF027, RF028, RF009, RF026.
 
-**Regras relacionadas**: RN03, RN04, RN05, RN08.
-
-**Princípios SOLID aplicados**
-
-- **S — Responsabilidade Única**: a validação de entrada é responsabilidade do schema, não do serviço nem do repositório.
-- **I — Segregação de Interfaces**: schemas distintos para criação (`ProvaCreateSchema`), atualização (`ProvaUpdateSchema`) e resposta (`ProvaResponseSchema`) evitam que clientes recebam campos internos do banco (como `auth_user_id`).
-
----
-
-### 4. Strategy Pattern — Estratégia de Correção
-
-**Descrição**
-
-O `CorrecaoService` encapsula duas estratégias distintas de correção acessíveis pelo mesmo contrato de interface: `corrigirManual()` e `corrigirAutomatico()`. A primeira atribui nota e observação inseridas pelo professor; a segunda compara a alternativa marcada pelo aluno com o gabarito armazenado em `alternativa.correta` e calcula a nota proporcionalmente à `pontuacao_max` da `prova_questao`. A função `corrigir_objetivas_automaticamente` no banco de dados implementa a mesma lógica na camada SQL para operações em lote.
-
-**Necessidade real**
-
-As US12 e US13 definem explicitamente dois comportamentos de correção que devem coexistir na mesma prova: questões discursivas exigem correção manual com nota atribuída pelo professor; questões de múltipla escolha e verdadeiro/falso são corrigidas automaticamente ao final do envio. Se a lógica de cada estratégia estivesse espalhada por condicionais `if/else` no controlador ou repositório, adicionar um terceiro tipo (ex.: correção semiautomática com sugestão por IA) exigiria modificações em múltiplos pontos, violando o princípio Aberto/Fechado.
-
-**Requisitos relacionados**: RF005, RF014, RF015 (US12, US13).
-
-**Regras relacionadas**: RN13.
-
-**Princípios SOLID aplicados**
-
-- **O — Aberto/Fechado**: novas estratégias de correção podem ser adicionadas sem alterar o `CorrecaoController`.
-- **D — Inversão de Dependência**: o controlador depende da abstração `CorrecaoService`, não da implementação específica de cada algoritmo de correção.
-
----
-
-### 5. State Pattern — Máquina de Estados da Prova
-
-**Descrição**
-
-A entidade `Prova` percorre um ciclo de vida bem definido com transições válidas unidirecionais: `rascunho → publicada → encerrada → antiga`. A entidade `ProvaAluno` segue ciclo próprio: `nao_iniciada → em_andamento → enviada → corrigida`. O `ProvaService` e o `ProvaAlunoService` centralizam a lógica de transição de estado, rejeitando transições inválidas antes que cheguem ao banco. O trigger `validar_transicao_e_publicacao_prova` no PostgreSQL aplica a mesma restrição como segunda linha de defesa.
-
-**Necessidade real**
-
-A RN01 proíbe edição de provas encerradas ou antigas; a RN05 impede que alunos iniciem uma prova fora do período ou cujo status não seja `publicada`; a US11 bloqueia alterações de respostas após o status `enviada`. Sem um controle de estado explícito, essas regras seriam implementadas como condicionais avulsas em diferentes controladores, levando a inconsistências. O histórico de transições é registrado em `prova_status_historico` (RF001, RF020), o que tornaria um controle distribuído ainda mais difícil de auditar.
-
-**Requisitos relacionados**: RF001, RF007, RF020 (UC02, UC06, UC07, UC11).
-
-**Regras relacionadas**: RN01, RN05.
-
-**Princípios SOLID aplicados**
-
-- **S — Responsabilidade Única**: `ProvaService.publicar()`, `ProvaService.encerrar()` e `ProvaService.arquivar()` são métodos distintos, cada um responsável por uma transição específica.
-- **O — Aberto/Fechado**: um novo estado (ex.: `suspensa`) pode ser adicionado sem reescrever os métodos das transições existentes.
-
----
-
-### 6. Chain of Responsibility — Middleware de Autenticação e Autorização
-
-**Descrição**
-
-As requisições ao backend percorrem uma cadeia de hooks do Fastify antes de atingir o handler de rota: (1) verificação de token de sessão OAuth2 (`AuthService.verificarSessao`); (2) identificação do perfil do usuário (Professor, Coordenador ou acesso anônimo para o portal do aluno); (3) verificação de permissão por perfil (ex.: apenas professores podem publicar provas; apenas coordenadores podem gerar relatórios). Cada elo da cadeia interrompe o fluxo e retorna HTTP 401 ou 403 se a condição não for satisfeita.
-
-**Necessidade real**
-
-A RN18 especifica que a verificação de autorização deve ocorrer no backend em todas as rotas protegidas, independentemente do frontend. O projeto possui três perfis com permissões assimétricas: o aluno acessa apenas por link UUID sem sessão (RN08); o professor cria, edita e corrige (RN18); o coordenador tem acesso de leitura e geração de relatórios (RF018, RF019). Centralizar essas verificações em middlewares garante que nenhum controlador esqueça de validar a autorização e facilita a adição de logs de auditoria (`AvaliacaoLog`) em um único ponto da cadeia.
-
-**Requisitos relacionados**: RF002, RF018, RF019, RF021 (US01, RNF Segurança).
-
-**Regras relacionadas**: RN18, RN19.
-
-**Princípios SOLID aplicados**
-
-- **S — Responsabilidade Única**: autenticação (validar quem é o usuário) e autorização (validar o que pode fazer) são elos separados da cadeia.
-- **O — Aberto/Fechado**: um novo perfil (ex.: `monitor`) pode ser inserido na cadeia sem modificar os handlers existentes.
-
----
-
-### 7. Singleton — Pool de Conexões com o Banco de Dados
-
-**Descrição**
-
-O arquivo `src/database/pool.ts` exporta uma única instância de `pg.Pool` configurada via variável de ambiente `DATABASE_URL`. Todos os repositórios importam e reutilizam esse mesmo pool, sem criar conexões independentes. A configuração detecta automaticamente se o banco é local (sem SSL) ou remoto via Supabase (com SSL), garantindo compatibilidade nos dois ambientes.
-
-**Necessidade real**
-
-O PostgreSQL impõe limites ao número de conexões simultâneas. O RNF de Capacidade exige suporte a 50 usuários simultâneos (sprints de carga); sem um pool centralizado, cada requisição abriria e fecharia sua própria conexão, esgotando rapidamente os recursos do banco Supabase no plano gratuito. O Singleton garante que o pool seja inicializado uma única vez na subida do servidor e compartilhado entre todas as requisições concorrentes.
-
-**Requisitos relacionados**: RNF Capacidade (suporte a ≥ 50 usuários simultâneos), RNF Desempenho (p95 < 500 ms).
-
-**Princípios SOLID aplicados**
-
-- **D — Inversão de Dependência**: os repositórios recebem o pool como dependência injetada ou o importam de um módulo centralizado — nunca criam conexões próprias.
-
----
-
-### 8. Observer Pattern — Triggers de Auditoria e Atualização Automática
-
-**Descrição**
-
-O banco de dados implementa múltiplos triggers que reagem a eventos de escrita nas tabelas principais: `set_atualizado_em` atualiza automaticamente o campo `atualizado_em` em todas as entidades mutáveis; `registrar_status_prova` insere um registro em `prova_status_historico` sempre que o status de uma prova muda; `gerar_qr_code_prova` atualiza o campo `qr_code` toda vez que `url_acesso` é definida. No nível da aplicação, o `AnalyticsService.registrarLog()` funciona como um observador que persiste eventos relevantes em `avaliacao_log` após cada ação do usuário.
-
-**Necessidade real**
-
-A US16 exige que logs com data e contexto mínimo sejam gerados para erros de upload, submissões e acessos (RF016). A RF008 exige que URL e QR Code sejam gerados conjuntamente ao publicar a prova. Implementar essas responsabilidades dentro dos métodos principais dos serviços aumentaria a complexidade ciclomática e acoplaria o fluxo de negócio com preocupações transversais (auditoria, notificação). O padrão Observer — especialmente via triggers no banco — garante que essas ações ocorram de forma confiável mesmo que a aplicação falhe após a escrita principal.
-
-**Requisitos relacionados**: RF008, RF017, RF020 (US07, US16).
-
-**Regras relacionadas**: RN07.
-
-**Princípios SOLID aplicados**
-
-- **S — Responsabilidade Única**: o serviço principal não precisa saber como o log é gravado; o observador (`AnalyticsService` ou trigger SQL) cuida disso.
-- **O — Aberto/Fechado**: novos observadores (ex.: envio de notificação push) podem ser adicionados sem modificar os serviços que disparam os eventos.
-
----
-
-### 9. Facade Pattern — Serviço como Fachada de Múltiplos Repositórios
-
-**Descrição**
-
-Operações complexas que envolvem múltiplas entidades são expostas como um único método de serviço. Por exemplo, `ResultadoService.exportarExcel()` coordena internamente chamadas a `ProvaAlunoRepository`, `CorrecaoRepository` e `ResultadoRepository`, consolida os dados e devolve um `Buffer` pronto para download — tudo isso invisível ao `ResultadoController`, que apenas chama `exportarExcel(provaId)` e repassa o buffer na resposta HTTP.
-
-**Necessidade real**
-
-A US14 exige que a exportação de resultados contenha alunos nas linhas e questões/notas nas colunas, alertando sobre pendências antes de exportar. Expor essa complexidade diretamente no controlador forçaria o controlador a orquestrar múltiplos repositórios e aplicar regras de negócio, violando o princípio de Responsabilidade Única e duplicando lógica em outros endpoints que precisam dos mesmos dados (ex.: liberação de resultados por e-mail).
-
-**Requisitos relacionados**: RF017, RF027, RF028 (US14, US15).
-
-**Regras relacionadas**: RN14, RN15, RN16.
-
-**Princípios SOLID aplicados**
-
-- **S — Responsabilidade Única**: o controlador só faz HTTP; o serviço faz a orquestração; cada repositório faz seu acesso a dados.
-- **I — Segregação de Interfaces**: o controlador não precisa conhecer nenhum repositório individualmente.
-
----
-
-### 10. Factory Method — Geração de Relatórios e Exportações
-
-**Descrição**
-
-O `RelatorioService.gerar()` recebe um parâmetro `tipo` (`desempenho_geral`, `por_aluno`, `por_questao`, `por_materia`) e delega a construção do conteúdo para métodos internos especializados, sem que o chamador precise conhecer como cada tipo de relatório é montado. O mesmo princípio se aplica à geração de arquivos Excel no `ResultadoService`, onde a estrutura de linhas e colunas é construída internamente conforme o contexto da prova.
-
-**Necessidade real**
-
-O coordenador precisa acessar relatórios de diferentes granularidades (RF019, US16). Se a lógica de construção de cada tipo estivesse no controlador ou em um único método monolítico, adicionar um novo tipo de relatório exigiria modificar código existente — violando o princípio Aberto/Fechado. O Factory Method permite que cada variante seja adicionada como um novo método interno sem tocar no contrato público do serviço.
-
-**Requisitos relacionados**: RF017, RF019 (US14, US16).
-
-**Regras relacionadas**: RN17.
-
-**Princípios SOLID aplicados**
-
-- **O — Aberto/Fechado**: novos tipos de relatório são adicionados sem modificar `RelatorioController` nem a assinatura pública de `RelatorioService.gerar()`.
-- **D — Inversão de Dependência**: o controlador não sabe como cada relatório é construído, apenas que o serviço sabe fazê-lo.
-
----
-
-### Resumo: Matriz Padrão × Princípio SOLID × Requisito
-
-| Padrão de Projeto              | S | O | L | I | D | Requisitos Centrais               | Regras Centrais        |
-|-------------------------------|---|---|---|---|---|-----------------------------------|------------------------|
-| Repository Pattern            | ✓ | · | ✓ | · | ✓ | RF001, RF002, RF009, RF017        | RN01, RN08, RN14       |
-| Service Layer                 | ✓ | ✓ | · | · | · | RF001, RF002, RF005, RF007, RF014 | RN01–RN20 (geral)      |
-| DTO / Zod Schema              | ✓ | · | · | ✓ | · | RF004, RF005, RF009, RF012        | RN03, RN04, RN08       |
-| Strategy (Correção)           | · | ✓ | · | · | ✓ | RF005, RF014, RF015               | RN13                   |
-| State (Status da Prova)       | ✓ | ✓ | · | · | · | RF001, RF007, RF020               | RN01, RN05             |
-| Chain of Responsibility       | ✓ | ✓ | · | · | · | RF002, RF018, RF021               | RN18, RN19             |
-| Singleton (Pool)              | · | · | · | · | ✓ | RNF Capacidade, RNF Desempenho    | —                      |
-| Observer (Triggers / Log)     | ✓ | ✓ | · | · | · | RF008, RF020                      | RN07                   |
-| Facade (Service → Repos)      | ✓ | · | · | ✓ | · | RF017, RF027, RF028               | RN14, RN15, RN16       |
-| Factory Method (Relatórios)   | · | ✓ | · | · | ✓ | RF017, RF019                      | RN17                   |
-
-**Legenda SOLID**: S = Single Responsibility · O = Open/Closed · L = Liskov Substitution · I = Interface Segregation · D = Dependency Inversion
+| Padrao | Evidencia no backend | Requisitos centrais |
+|--------|----------------------|---------------------|
+| Repository | repositories/*.repository.ts | RF001, RF003, RF014, RF017 |
+| Service Layer | services/*.service.ts | RF001, RF007, RF009, RF017 |
+| DTO/Zod | schemas/*.schema.ts e rotas Fastify | RF004, RF007, RF009, RF015 |
+| Strategy | CorrecaoService e CorrecaoRepository | RF014, RF015 |
+| State | ProvaService, RespostaAlunoService e triggers | RF001, RF008, RF026 |
+| Chain of Responsibility | middlewares/auth.ts e requireRole | RF002, RF018, RF019 |
+| Singleton | database/pool.ts | RNF desempenho/capacidade |
+| Observer | triggers, AvaliacaoLogRepository, AnalyticsService | RF008, RF019, RF020 |
+| Facade | ResultadoService, EmailResultadoService, AnexoExportarService | RF017, RF027, RF028 |
 
 ## 3.3. Wireframes (sprint 2)
 
@@ -4400,798 +4338,333 @@ As telas a seguir apresentam recortes do protótipo de alta fidelidade do Corrij
 
 ### 3.6.1. Modelo Entidade-Relacionamento (ER) (sprint 2)
 
+O ER conceitual abaixo segue a migration atual e usa apenas entidades reais do backend: coordenador, professor, aluno, materia, tema, questao, enunciado, alternativa, prova, prova_questao, prova_aluno, resposta_aluno, resposta_anexo, correcao, feedback, resultado_aluno, exportacao_resultado, email_envio e avaliacao_log.
 
-Antes da implementação física do banco de dados, foi realizada a modelagem das informações do sistema por meio do Modelo Entidade-Relacionamento (MER) e do Diagrama Entidade-Relacionamento (DER). Esses diagramas têm como objetivo representar, em diferentes níveis de detalhamento, as principais entidades do projeto, seus atributos e os relacionamentos existentes entre elas.
-
-O Modelo Entidade-Relacionamento (MER) apresenta uma visão conceitual do banco de dados, focando nas entidades principais do domínio, como Pessoa, Aluno, Professor, Coordenador, Matéria, Prova, Enunciado, Alternativa, Resposta do Aluno, Correção, Feedback e Relatório. Nesse modelo, são demonstradas as relações gerais entre os elementos do sistema, como a associação entre professores e matérias, provas e enunciados, alunos e provas, além da especialização da entidade Pessoa em diferentes perfis de usuário.
-
-```plantuml
-@startuml
-title Modelo Entidade-Relacionamento Conceitual - MER 
-
+~~~plantuml
+@startuml ERAtual
 hide circle
 skinparam linetype ortho
-skinparam classAttributeIconSize 0
 
-' =========================
-' Usuários internos
-' =========================
+entity coordenador
+entity professor
+entity aluno
+entity materia
+entity materia_professor
+entity tema
+entity questao
+entity enunciado
+entity alternativa
+entity prova
+entity prova_status_historico
+entity prova_questao
+entity prova_aluno
+entity resposta_aluno
+entity resposta_anexo
+entity correcao
+entity feedback
+entity resultado_aluno
+entity exportacao_resultado
+entity email_envio
+entity avaliacao_log
 
-entity "Professor" as professor {
-  * id
-  --
-  nome
-  email
-  ativo
-}
-
-entity "Coordenador" as coordenador {
-  * id
-  --
-  nome
-  email
-  ativo
-}
-
-' =========================
-' Organização pedagógica
-' =========================
-
-entity "Matéria" as materia {
-  * id
-  --
-  nome
-  codigo
-}
-
-entity "Tema" as tema {
-  * id
-  --
-  nome
-  descrição
-}
-
-' =========================
-' Prova
-' =========================
-
-entity "Prova" as prova {
-  * id
-  --
-  titulo
-  descrição
-  modalidade
-  turma
-  semestre
-  status
-  duração
-  início_agendado
-  fim_agendado
-  link_publicação
-  qr_code
-}
-
-entity "Enunciado" as enunciado {
-  * id
-  --
-  tipo
-  texto
-  pontos
-  limite_caracteres
-  limite_palavras
-  ativo
-}
-
-entity "Alternativa" as alternativa {
-  * id
-  --
-  texto
-  correta
-  ordem
-}
-
-entity "Questão da Prova" as questao_prova {
-  * id
-  --
-  ordem
-  pontos
-}
-
-' =========================
-' Submissão do aluno
-' =========================
-
-entity "Submissão da Prova" as submissao {
-  * id
-  --
-  nome_aluno_informado
-  email_aluno_informado
-  cpf_aluno_informado
-  aceite_lgpd
-  status
-  iniciado_em
-  enviado_em
-  nota_total
-}
-
-entity "Resposta da Submissão" as resposta {
-  * id
-  --
-  texto_resposta
-  rascunho
-}
-
-entity "Arquivo da Resposta" as arquivo_resposta {
-  * id
-  --
-  arquivo_url
-  nome_original
-  tipo_arquivo
-  tamanho
-}
-
-' =========================
-' Correção
-' =========================
-
-entity "Correção" as correcao {
-  * id
-  --
-  nota
-  observação
-  status
-  corrigida_em
-}
-
-entity "Feedback" as feedback {
-  * id
-  --
-  mensagem
-}
-
-' =========================
-' Relatório
-' =========================
-
-entity "Relatório" as relatorio {
-  * id
-  --
-  título
-  conteúdo
-  arquivo
-  gerado_em
-}
-
-' =========================
-' Relacionamentos conceituais
-' =========================
-
-professor }o--o{ materia : "0..N Professores lecionam 0..N Matérias"
-
-professor ||--o{ prova : "1 Professor elabora 0..N Provas"
-
-prova }o--o{ materia : "0..N Provas abordam 0..N Matérias"
-
-materia ||--o{ tema : "1 Matéria possui 0..N Temas"
-
-materia ||--o{ enunciado : "1 Matéria possui 0..N Enunciados"
-
-tema |o--o{ enunciado : "0..1 Tema classifica 0..N Enunciados"
-
-professor ||--o{ enunciado : "1 Professor cria 0..N Enunciados"
-
-prova ||--o{ questao_prova : "1 Prova contém 0..N Questões"
-
-enunciado ||--o{ questao_prova : "1 Enunciado pode ser usado em 0..N Provas"
-
-enunciado ||--o{ alternativa : "1 Enunciado possui 0..N Alternativas"
-
-prova ||--o{ submissao : "1 Prova recebe 0..N Submissões"
-
-submissao ||--o{ resposta : "1 Submissão contém 0..N Respostas"
-
-questao_prova ||--o{ resposta : "1 Questão da Prova recebe 0..N Respostas"
-
-alternativa |o--o{ resposta : "0..1 Alternativa pode aparecer em 0..N Respostas"
-
-resposta ||--o{ arquivo_resposta : "1 Resposta possui 0..N Arquivos"
-
-resposta ||--o| correcao : "1 Resposta recebe 0..1 Correção"
-
-professor ||--o{ correcao : "1 Professor realiza 0..N Correções"
-
-correcao ||--o{ feedback : "1 Correção possui 0..N Feedbacks"
-
-professor ||--o{ feedback : "1 Professor escreve 0..N Feedbacks"
-
-coordenador ||--o{ relatorio : "1 Coordenador gera 0..N Relatórios"
-
-prova ||--o{ relatorio : "1 Prova baseia 0..N Relatórios"
-
-' =========================
-' Observações conceituais
-' =========================
-
-note right of submissao
-O aluno não é uma entidade do modelo.
-
-Os dados nome, e-mail e CPF são apenas
-informações digitadas no momento da submissão.
-
-Eles não são chave primária nem únicos,
-pois o aluno pode errar esses dados
-e ainda assim enviar a prova.
-end note
-
-note right of professor
-Professor é uma entidade independente.
-Não herda de Pessoa.
-end note
-
-note right of coordenador
-Coordenador é uma entidade independente.
-Não herda de Pessoa.
-end note
-
-note right of questao_prova
-Representa a associação entre
-Prova e Enunciado.
-
-Permite controlar ordem e pontuação
-da questão dentro de uma prova específica.
-end note
-
+coordenador ||--o{ professor
+professor ||--o{ materia_professor
+materia ||--o{ materia_professor
+materia ||--o{ tema
+materia ||--o{ questao
+materia ||--o{ prova
+questao ||--|| enunciado
+questao ||--o{ alternativa
+prova ||--o{ prova_status_historico
+prova ||--o{ prova_questao
+questao ||--o{ prova_questao
+prova ||--o{ prova_aluno
+aluno ||--o{ prova_aluno
+prova_aluno ||--o{ resposta_aluno
+questao ||--o{ resposta_aluno
+alternativa |o--o{ resposta_aluno
+resposta_aluno ||--o{ resposta_anexo
+resposta_aluno ||--o| correcao
+correcao ||--o{ feedback
+prova_aluno ||--o| resultado_aluno
+prova ||--o{ exportacao_resultado
+prova_aluno ||--o{ email_envio
+prova ||--o{ avaliacao_log
 @enduml
-```
+~~~
 
 ### 3.6.2. Diagrama Entidade-Relacionamento (DER) (sprint 2)
 
-Já o Diagrama Entidade-Relacionamento (DER) detalha essa estrutura em uma visão mais próxima da implementação no banco de dados. Nele, as entidades são representadas como tabelas, contendo seus principais atributos, tipos de dados, chaves primárias, chaves estrangeiras e restrições, como `UNIQUE` e relacionamentos obrigatórios ou opcionais. Além disso, o DER explicita tabelas associativas, como `Professor_Materia`, `Prova_Materia`, `Prova_Enunciado` e `Prova_Aluno`, utilizadas para representar relacionamentos muitos-para-muitos de forma adequada no modelo relacional.
-
-Dessa forma, o MER contribui para a compreensão conceitual do domínio do sistema, enquanto o DER serve como base para a construção do modelo relacional e físico do banco de dados no PostgreSQL/Supabase. A partir desses diagramas, torna-se possível implementar as migrations DDL de maneira mais organizada, garantindo integridade referencial, clareza nas relações entre tabelas e consistência na estrutura dos dados.
-
-```plantuml
-@startuml
-title Diagrama Entidade-Relacionamento - DER 
-
-hide circle
-skinparam linetype ortho
-skinparam classAttributeIconSize 0
-
-' =========================
-' Usuários internos
-' =========================
-
-entity "Professor" as professor {
-  * id : BIGSERIAL <<PK>>
-  --
-  nome : VARCHAR(150)
-  email : VARCHAR(255) <<UNIQUE>>
-  google_sub : VARCHAR(255) <<UNIQUE>>
-  ativo : BOOLEAN
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-entity "Coordenador" as coordenador {
-  * id : BIGSERIAL <<PK>>
-  --
-  nome : VARCHAR(150)
-  email : VARCHAR(255) <<UNIQUE>>
-  google_sub : VARCHAR(255) <<UNIQUE>>
-  ativo : BOOLEAN
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-' =========================
-' Organização pedagógica
-' =========================
-
-entity "Materia" as materia {
-  * id : BIGSERIAL <<PK>>
-  --
-  nome : VARCHAR(120) <<UNIQUE>>
-  codigo : VARCHAR(30) <<UNIQUE>>
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-entity "Tema" as tema {
-  * id : BIGSERIAL <<PK>>
-  --
-  materia_id : BIGINT <<FK>>
-  nome : VARCHAR(120)
-  descricao : TEXT
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-entity "Professor_Materia" as professor_materia {
-  * professor_id : BIGINT <<PK, FK>>
-  * materia_id : BIGINT <<PK, FK>>
-  --
-  criado_em : TIMESTAMPTZ
-}
-
-' =========================
-' Provas
-' =========================
-
-entity "Prova" as prova {
-  * id : BIGSERIAL <<PK>>
-  --
-  professor_id : BIGINT <<FK>>
-  titulo : VARCHAR(180)
-  descricao : TEXT
-  modalidade : VARCHAR(60)
-  turma : VARCHAR(80)
-  semestre : VARCHAR(20)
-  status : status_prova_enum
-  duracao_minutos : INTEGER
-  inicio_agendado : TIMESTAMPTZ
-  fim_agendado : TIMESTAMPTZ
-  embaralhar_questoes : BOOLEAN
-  embaralhar_alternativas : BOOLEAN
-  link_publicacao : UUID <<UNIQUE>>
-  qr_code_url : TEXT
-  publicada_em : TIMESTAMPTZ
-  encerrada_em : TIMESTAMPTZ
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-entity "Prova_Materia" as prova_materia {
-  * prova_id : BIGINT <<PK, FK>>
-  * materia_id : BIGINT <<PK, FK>>
-  --
-  criado_em : TIMESTAMPTZ
-}
-
-' =========================
-' Banco de questões
-' =========================
-
-entity "Enunciado" as enunciado {
-  * id : BIGSERIAL <<PK>>
-  --
-  materia_id : BIGINT <<FK>>
-  tema_id : BIGINT <<FK, NULL>>
-  criado_por_professor_id : BIGINT <<FK>>
-  tipo : tipo_questao_enum
-  texto : TEXT
-  pontos_padrao : DECIMAL(6,2)
-  ordem_banco : INTEGER
-  limite_caracteres : INTEGER
-  limite_palavras : INTEGER
-  ativo : BOOLEAN
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-entity "Alternativa" as alternativa {
-  * id : BIGSERIAL <<PK>>
-  --
-  enunciado_id : BIGINT <<FK>>
-  texto : TEXT
-  correta : BOOLEAN
-  ordem : INTEGER
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-entity "Prova_Enunciado" as prova_enunciado {
-  * id : BIGSERIAL <<PK>>
-  --
-  prova_id : BIGINT <<FK>>
-  enunciado_id : BIGINT <<FK>>
-  ordem : INTEGER
-  pontos : DECIMAL(6,2)
-  criado_em : TIMESTAMPTZ
-}
-
-' =========================
-' Submissão do aluno
-' =========================
-
-entity "Submissao_Prova" as submissao_prova {
-  * id : BIGSERIAL <<PK>>
-  --
-  prova_id : BIGINT <<FK>>
-
-  nome_aluno_informado : VARCHAR(150)
-  email_aluno_informado : VARCHAR(255)
-  cpf_aluno_informado : VARCHAR(14)
-
-  aceite_lgpd : BOOLEAN
-  aceite_lgpd_em : TIMESTAMPTZ
-
-  token_tentativa : UUID <<UNIQUE>>
-  status : status_submissao_enum
-  iniciado_em : TIMESTAMPTZ
-  enviado_em : TIMESTAMPTZ
-  nota_total : DECIMAL(6,2)
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-entity "Resposta_Submissao" as resposta_submissao {
-  * id : BIGSERIAL <<PK>>
-  --
-  submissao_prova_id : BIGINT <<FK>>
-  prova_enunciado_id : BIGINT <<FK>>
-  alternativa_id : BIGINT <<FK, NULL>>
-  texto_resposta : TEXT
-  rascunho : BOOLEAN
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-entity "Arquivo_Resposta" as arquivo_resposta {
-  * id : BIGSERIAL <<PK>>
-  --
-  resposta_submissao_id : BIGINT <<FK>>
-  arquivo_url : TEXT
-  nome_original : VARCHAR(255)
-  tipo_mime : VARCHAR(100)
-  tamanho_bytes : BIGINT
-  criado_em : TIMESTAMPTZ
-}
-
-' =========================
-' Correção e feedback
-' =========================
-
-entity "Correcao" as correcao {
-  * id : BIGSERIAL <<PK>>
-  --
-  resposta_submissao_id : BIGINT <<FK, UNIQUE>>
-  professor_id : BIGINT <<FK>>
-  nota : DECIMAL(6,2)
-  observacao : TEXT
-  status : status_correcao_enum
-  corrigida_em : TIMESTAMPTZ
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-entity "Feedback" as feedback {
-  * id : BIGSERIAL <<PK>>
-  --
-  correcao_id : BIGINT <<FK>>
-  professor_id : BIGINT <<FK>>
-  mensagem : TEXT
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-' =========================
-' Relatórios
-' =========================
-
-entity "Relatorio" as relatorio {
-  * id : BIGSERIAL <<PK>>
-  --
-  coordenador_id : BIGINT <<FK>>
-  prova_id : BIGINT <<FK>>
-  titulo : VARCHAR(180)
-  conteudo : TEXT
-  arquivo_url : TEXT
-  gerado_em : TIMESTAMPTZ
-  criado_em : TIMESTAMPTZ
-  atualizado_em : TIMESTAMPTZ
-}
-
-' =========================
-' Observações importantes
-' =========================
-
-note right of professor
-Professor é uma entidade independente.
-Não existe herança com Pessoa.
-end note
-
-note right of coordenador
-Coordenador é uma entidade independente.
-Não existe herança com Pessoa.
-end note
-
-note right of submissao_prova
-Aluno não é entidade cadastral.
-
-Nome, e-mail e CPF são dados informados
-no momento da submissão.
-
-Esses campos não são PK nem UNIQUE,
-pois podem ser digitados com erro.
-
-Para iniciar a prova:
-- aceite_lgpd deve ser true;
-- aceite_lgpd_em deve estar preenchido;
-- token_tentativa identifica a tentativa.
-end note
-
-note right of prova_materia
-A matéria associada à prova deve estar
-entre as matérias lecionadas pelo professor
-que elaborou a prova.
-
-Regra recomendada:
-EXISTS Professor_Materia
-(professor_id = prova.professor_id
-AND materia_id = prova_materia.materia_id)
-end note
-
-note right of enunciado
-Se tema_id estiver preenchido,
-o tema deve pertencer à mesma matéria
-do enunciado.
-
-Regra recomendada:
-tema.materia_id = enunciado.materia_id
-end note
-
-note right of prova_enunciado
-Recomenda-se:
-
-UNIQUE(prova_id, enunciado_id)
-UNIQUE(prova_id, ordem)
-
-O enunciado só pode ser associado
-à prova se sua matéria estiver entre
-as matérias da prova.
-end note
-
-note right of resposta_submissao
-Recomenda-se:
-
-UNIQUE(submissao_prova_id, prova_enunciado_id)
-
-A resposta deve pertencer à mesma prova
-da submissão.
-
-A alternativa marcada deve pertencer
-ao mesmo enunciado da questão respondida.
-
-alternativa_id é NULL em questões discursivas.
-end note
-
-note right of alternativa
-Para questões objetivas, recomenda-se validar:
-- mínimo de alternativas;
-- apenas uma correta, se for múltipla escolha simples;
-- alternativas compatíveis com o tipo da questão;
-- UNIQUE(enunciado_id, ordem).
-end note
-
-note right of prova
-Recomenda-se validar:
-- inicio_agendado < fim_agendado;
-- status seguindo transições permitidas;
-- prova publicada deve possuir ao menos uma questão;
-- prova publicada deve possuir ao menos uma matéria;
-- link_publicacao e qr_code_url obrigatórios
-  quando status = publicada.
-end note
-
-note right of correcao
-Cada resposta pode receber no máximo
-uma correção.
-
-Por isso, resposta_submissao_id
-deve ser UNIQUE.
-end note
-
-' =========================
-' Relacionamentos
-' =========================
-
-professor ||--o{ prova : "elabora"
-
-professor ||--o{ professor_materia : "leciona"
-materia ||--o{ professor_materia : "é lecionada por"
-
-materia ||--o{ tema : "possui"
-materia ||--o{ enunciado : "possui"
-tema |o--o{ enunciado : "classifica"
-
-professor ||--o{ enunciado : "cria"
-
-prova ||--o{ prova_materia : "aborda"
-materia ||--o{ prova_materia : "aparece em"
-
-enunciado ||--o{ alternativa : "possui"
-
-prova ||--o{ prova_enunciado : "contém"
-enunciado ||--o{ prova_enunciado : "é usado em"
-
-prova ||--o{ submissao_prova : "recebe"
-submissao_prova ||--o{ resposta_submissao : "contém"
-
-prova_enunciado ||--o{ resposta_submissao : "é respondido em"
-alternativa |o--o{ resposta_submissao : "é marcada em"
-
-resposta_submissao ||--o{ arquivo_resposta : "possui anexos"
-
-resposta_submissao ||--o| correcao : "recebe"
-professor ||--o{ correcao : "realiza"
-
-correcao ||--o{ feedback : "possui"
-professor ||--o{ feedback : "escreve"
-
-coordenador ||--o{ relatorio : "gera"
-prova ||--o{ relatorio : "baseia"
-
-@enduml
-```
-
-### 3.6.3. Modelo Relacional e Modelo Físico
-
-Esta seção apresenta a modelagem física do banco de dados do projeto. O modelo foi estruturado para utilização com PostgreSQL/Supabase, contemplando as tabelas principais do sistema, seus atributos, tipos de dados, chaves primárias, chaves estrangeiras, restrições e índices.
-
-
-#### Modelo Físico
-
-O modelo físico descreve como o banco será implementado no PostgreSQL/Supabase, incluindo tipos de dados, constraints e relacionamentos.
-
-As principais decisões adotadas foram:
-
-- Utilização de `UUID` como chave primária nas tabelas principais;
-- Uso de `gen_random_uuid()` para geração automática dos identificadores;
-- Definição de campos obrigatórios com `NOT NULL`;
-- Uso de `FOREIGN KEY` para garantir integridade entre tabelas relacionadas;
-- Uso de `UNIQUE` para impedir duplicidade em campos como e-mail;
-- Uso de `TIMESTAMPTZ` para armazenar datas e horários com fuso;
-- Uso de tabelas associativas para representar relacionamentos muitos-para-muitos.
-
-#### Principais Tabelas
-
-##### Tabela `coordenador`
-
-A tabela `coordenador` armazena os coordenadores do sistema, responsáveis por gerenciar professores e configurar o ambiente.
-
-Principais atributos:
-
-- `id`: identificador único do coordenador (UUID, PK);
-- `auth_user_id`: referência ao Supabase Auth (`auth.users`);
-- `nome`: nome completo;
-- `email`: e-mail único;
-- `criado_em`: data de criação do registro;
-- `atualizado_em`: data da última atualização.
-
-##### Tabela `professor`
-
-A tabela `professor` representa os professores cadastrados no sistema, vinculados a um coordenador.
-
-Principais atributos:
-
-- `id`: identificador único do professor (UUID, PK);
-- `auth_user_id`: referência ao Supabase Auth;
-- `coordenador_id`: referência à tabela `coordenador` (FK);
-- `nome`: nome completo;
-- `email`: e-mail único;
-- `criado_em`: data de criação do registro;
-- `atualizado_em`: data da última atualização.
-
-##### Tabela `aluno`
-
-A tabela `aluno` representa os estudantes cadastrados no sistema, com dados próprios e independentes.
-
-Principais atributos:
-
-- `id`: identificador único do aluno (UUID, PK);
-- `auth_user_id`: referência ao Supabase Auth;
-- `nome`: nome completo;
-- `email`: e-mail único;
-- `cpf`: CPF do aluno (único, opcional);
-- `aceitou_termos_em`: data de aceite dos termos;
-- `criado_em`: data de criação do registro;
-- `atualizado_em`: data da última atualização.
-
-##### Tabela `materia`
-
-A tabela `materia` armazena as disciplinas disponíveis no sistema.
-
-Principais atributos:
-
-- `id`: identificador único da matéria;
-- `nome`: nome da matéria;
-- demais campos relacionados à disciplina.
-
-##### Tabela `materia_professor`
-
-A tabela `materia_professor` representa o relacionamento muitos-para-muitos entre matérias e professores.
-
-Principais atributos:
-
-- `materia_id`: referência à matéria;
-- `professor_id`: referência ao professor.
-
-A chave primária composta é formada por `materia_id` e `professor_id`, evitando que o mesmo professor seja associado à mesma matéria mais de uma vez.
-
-#### Migrations DDL
-
-As migrations DDL são os arquivos SQL responsáveis por criar a estrutura do banco de dados de forma reproduzível.
-
-A migration principal do projeto está localizada em:
-
-```text
+O DER fisico preserva os nomes de tabela e campos implementados. As relacoes principais sao:
+
+| Relacao | Implementacao fisica |
+|---------|----------------------|
+| Coordenador -> Professor | professor.coordenador_id referencia coordenador.id |
+| Professor <-> Materia | materia_professor(professor_id, materia_id) |
+| Materia -> Tema/Questao/Prova | tema.materia_id, questao.materia_id e prova.materia_id |
+| Questao -> Enunciado/Alternativa | enunciado.questao_id e alternativa.questao_id |
+| Prova <-> Questao | prova_questao(prova_id, questao_id) com ordem e pontuacao_max |
+| Prova -> ProvaAluno | prova_aluno.prova_id |
+| Aluno -> ProvaAluno | prova_aluno.aluno_id |
+| ProvaAluno -> RespostaAluno | resposta_aluno.prova_aluno_id |
+| RespostaAluno -> RespostaAnexo | resposta_anexo.resposta_id |
+| RespostaAluno -> Correcao | correcao.resposta_id unico por resposta |
+| Correcao -> Feedback | feedback.correcao_id |
+| ProvaAluno -> ResultadoAluno | resultado_aluno.prova_aluno_id |
+| Prova -> ExportacaoResultado/AvaliacaoLog | exportacao_resultado.prova_id e avaliacao_log.prova_id |
+| ProvaAluno -> EmailEnvio | email_envio.prova_aluno_id |
+
+Regras fisicas relevantes:
+
+- prova_questao impede duplicidade de questao na mesma prova e controla ordem.
+- resposta_aluno vincula a resposta a prova_aluno e questao; alternativa_id e opcional para discursivas.
+- correcao usa ON CONFLICT por resposta_id para permitir atualizacao de nota.
+- prova_status_historico registra transicoes de status.
+- avaliacao_log guarda eventos de auditoria/analytics.
+
+### 3.6.3. Modelo Relacional e Modelo Fisico
+
+Esta secao apresenta a modelagem fisica implementada no PostgreSQL/Supabase. A fonte de verdade e src/backend/src/database/migrations/migration.sql, que define tipos, tabelas, PKs, FKs, indices, triggers, funcoes auxiliares e politicas de Row Level Security.
+
+#### Decisoes fisicas implementadas
+
+- UUID como chave primaria nas entidades centrais.
+- TIMESTAMPTZ para datas de criacao, atualizacao, publicacao, envio e correcao.
+- ENUMs para status de prova, tipo de questao, perfil, status de prova_aluno, formato de exportacao e status de e-mail.
+- FOREIGN KEY entre coordenador, professor, materia, questao, prova, aluno, respostas, correcoes e resultados.
+- Indices em professor_id, materia_id, tema_id, status, prova_id, questao_id e acoes de log.
+- UNIQUE e indices parciais para e-mails, professor-materia, questao em prova e alternativa correta por questao quando aplicavel.
+- Triggers de validacao para publicacao, alternativas, vinculo professor/materia, resposta, correcao e transicao de status.
+- RLS habilitado nas tabelas do dominio.
+
+| Grupo | Tabelas | Finalidade |
+|-------|---------|------------|
+| Identidade e acesso | coordenador, professor, aluno | Usuarios internos e identificacao do aluno. |
+| Catalogo academico | materia, materia_professor, tema | Disciplinas, vinculos e temas. |
+| Banco de questoes | questao, enunciado, alternativa | Questao, LaTeX/imagem e alternativas. |
+| Provas | prova, prova_status_historico, prova_questao | Metadados, ciclo de vida, URL/QR Code e composicao. |
+| Aplicacao ao aluno | prova_aluno, resposta_aluno, resposta_anexo | Inicio, respostas, envio final e anexos. |
+| Correcao e feedback | correcao, feedback | Nota, observacao e feedback do professor. |
+| Resultados e comunicacao | resultado_aluno, exportacao_resultado, email_envio | Notas, exportacoes e e-mails. |
+| Auditoria e analytics | avaliacao_log, relatorio | Eventos de uso, logs e relatorios. |
+
+#### Relacionamentos principais
+
+- coordenador 1:N professor.
+- professor N:N materia por materia_professor.
+- materia 1:N tema, questao e prova.
+- questao 1:1 enunciado e 1:N alternativa.
+- prova N:N questao por prova_questao.
+- prova 1:N prova_aluno e prova_status_historico.
+- aluno 1:N prova_aluno.
+- prova_aluno 1:N resposta_aluno.
+- resposta_aluno 1:N resposta_anexo e 1:1 correcao.
+- correcao 1:N feedback.
+- prova 1:N resultado_aluno, exportacao_resultado, email_envio e avaliacao_log.
+
+#### Migration DDL
+
+~~~text
 src\backend\src\database\migrations\migration.sql
-```
+~~~
 
-### 3.6.4. Consultas SQL e lógica proposicional (sprint 2)
+### 3.6.4. Consultas SQL e logica proposicional (sprint 2)
 
-As tabelas verdade abaixo mapeiam cada condição das consultas SQL para proposições lógicas (A, B, C, D), combinadas por conectivos ($\land$ = AND, $\lor$ = OR, $\neg$ = NOT). Cada linha da tabela representa uma combinação possível de valores verdade (V = verdadeiro, F = falso) e o resultado final da expressão.
+As consultas abaixo foram retiradas ou derivadas diretamente dos repositories e da migration do backend. Cada consulta possui condicao composta e demonstra AND, OR, EXISTS, ILIKE, IN, IS NOT NULL, negacao logica e UPSERT.
 
-| #1 | --- |
-| --- | --- |
-| **Expressão SQL** | `SELECT COUNT(*) FROM "prova_questao" pq JOIN "questao" q ON q."id" = pq."questao_id" WHERE pq."prova_id" = $1 AND q."tipo" = 'multipla_escolha' AND ((SELECT COUNT(*) FROM "alternativa" a WHERE a."questao_id" = q."id") < 2 OR (SELECT COUNT(*) FROM "alternativa" a WHERE a."questao_id" = q."id" AND a."correta" = TRUE) <> 1);` |
-| **Proposições lógicas** | $A$: A questão pertence à prova informada (`pq."prova_id" = $1`) <br> $B$: A questão é de múltipla escolha (`q."tipo" = 'multipla_escolha'`) <br> $C$: A questão tem menos de 2 alternativas (`COUNT < 2`) <br> $D$: A questão não tem exatamente uma alternativa correta (`COUNT <> 1`) |
-| **Expressão lógica proposicional** | $A \land B \land (C \lor D)$ |
-| **Tabela Verdade** | <table><thead><tr><th>$A$</th><th>$B$</th><th>$C$</th><th>$D$</th><th>$C \lor D$</th><th>$A \land B \land (C \lor D)$</th></tr></thead><tbody><tr><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td></tr><tr><td>F</td><td>F</td><td>F</td><td>V</td><td>V</td><td>F</td></tr><tr><td>F</td><td>F</td><td>V</td><td>F</td><td>V</td><td>F</td></tr><tr><td>F</td><td>F</td><td>V</td><td>V</td><td>V</td><td>F</td></tr><tr><td>F</td><td>V</td><td>F</td><td>F</td><td>F</td><td>F</td></tr><tr><td>F</td><td>V</td><td>F</td><td>V</td><td>V</td><td>F</td></tr><tr><td>F</td><td>V</td><td>V</td><td>F</td><td>V</td><td>F</td></tr><tr><td>F</td><td>V</td><td>V</td><td>V</td><td>V</td><td>F</td></tr><tr><td>V</td><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td></tr><tr><td>V</td><td>F</td><td>F</td><td>V</td><td>V</td><td>F</td></tr><tr><td>V</td><td>F</td><td>V</td><td>F</td><td>V</td><td>F</td></tr><tr><td>V</td><td>F</td><td>V</td><td>V</td><td>V</td><td>F</td></tr><tr><td>V</td><td>V</td><td>F</td><td>F</td><td>F</td><td>F</td></tr><tr><td>V</td><td>V</td><td>F</td><td>V</td><td>V</td><td>V</td></tr><tr><td>V</td><td>V</td><td>V</td><td>F</td><td>V</td><td>V</td></tr><tr><td>V</td><td>V</td><td>V</td><td>V</td><td>V</td><td>V</td></tr></tbody></table> |
+#### Consulta 1 - validacao de questoes objetivas antes da publicacao
 
-**Descrição:**
-Essa consulta, utilizada no trigger `validar_transicao_e_publicacao_prova` do migration.sql, conta quantas questões de múltipla escolha em uma prova estão inválidas — seja por terem menos de 2 alternativas cadastradas, seja por não possuírem exatamente uma alternativa correta. A validação impede a publicação da prova enquanto houver questões nessa condição.
+~~~sql
+SELECT COUNT(*)
+FROM "prova_questao" pq
+JOIN "questao" q ON q."id" = pq."questao_id"
+WHERE pq."prova_id" = $1
+  AND q."tipo" = 'multipla_escolha'
+  AND (
+    (SELECT COUNT(*) FROM "alternativa" a WHERE a."questao_id" = q."id") < 2
+    OR
+    (SELECT COUNT(*) FROM "alternativa" a WHERE a."questao_id" = q."id" AND a."correta" = TRUE) <> 1
+  );
+~~~
 
----
+Descricao: conta questoes de multipla escolha invalidas antes da publicacao.
 
+| Proposicao | Significado |
+|------------|-------------|
+| A | A questao pertence a prova informada. |
+| B | A questao e multipla escolha. |
+| C | A questao tem menos de duas alternativas. |
+| D | A questao nao tem exatamente uma alternativa correta. |
 
-| #2 | --- |
-| --- | --- |
-| **Expressão SQL** | `SELECT e."conteudo_latex", q."tipo", q."ativa" FROM "questao" q JOIN "enunciado" e ON e."questao_id" = q."id" WHERE q."materia_id" IN (SELECT "materia_id" FROM "materia_professor" WHERE "professor_id" = $1) AND e."conteudo_latex" ILIKE '%geometria%';` |
-| **Proposições lógicas** | $A$: A questão pertence a uma matéria do professor (`q."materia_id" IN (subquery)`) <br> $B$: O enunciado contém o termo "geometria" (`e."conteudo_latex" ILIKE '%geometria%'`) |
-| **Expressão lógica proposicional** | $A \land B$ |
-| **Tabela Verdade** | <table><thead><tr><th>$A$</th><th>$B$</th><th>$A \land B$</th></tr></thead><tbody><tr><td>F</td><td>F</td><td>F</td></tr><tr><td>F</td><td>V</td><td>F</td></tr><tr><td>V</td><td>F</td><td>F</td></tr><tr><td>V</td><td>V</td><td>V</td></tr></tbody></table> |
+Expressao logica: A AND B AND (C OR D).
 
-**Descrição:**
-Essa consulta, baseada no `questao.repository.ts`, retorna questões cuja matéria esteja vinculada ao professor logado (usando IN com subquery) e cujo enunciado contenha o termo "geometria" (usando ILIKE, que é a versão case-insensitive do LIKE). Esta consulta demonstra dois operadores adicionais exigidos pelo Art. 6: `IN` (subconsulta) e `ILIKE` (busca textual).
+| A | B | C | D | C OR D | Resultado |
+|---|---|---|---|--------|-----------|
+| F | F | F | F | F | F |
+| F | V | V | F | V | F |
+| V | F | V | V | V | F |
+| V | V | F | F | F | F |
+| V | V | V | F | V | V |
+| V | V | F | V | V | V |
+| V | V | V | V | V | V |
 
----
+#### Consulta 2 - listagem de questoes por professor, status ativo e busca textual
 
+~~~sql
+SELECT q.*, e."conteudo_latex" AS "enunciado_conteudo_latex"
+FROM "questao" q
+JOIN "enunciado" e ON e."questao_id" = q."id"
+WHERE EXISTS (
+  SELECT 1
+  FROM "materia_professor" mp
+  WHERE mp."materia_id" = q."materia_id"
+    AND mp."professor_id" = $1
+)
+AND q."ativa" = TRUE
+AND e."conteudo_latex" ILIKE $2;
+~~~
 
-| #3 | --- |
-| --- | --- |
-| **Expressão SQL** | `INSERT INTO "correcao" ("resposta_id", "professor_id", "nota", "tipo", "corrigida_em") SELECT ra."id", $1, pq."pontuacao_max", 'automatica', CURRENT_TIMESTAMP FROM "resposta_aluno" ra JOIN "prova_aluno" pa ON pa."id" = ra."prova_aluno_id" JOIN "prova_questao" pq ON pq."prova_id" = pa."prova_id" AND pq."questao_id" = ra."questao_id" JOIN "questao" q ON q."id" = ra."questao_id" JOIN "alternativa" a ON a."id" = ra."alternativa_id" WHERE pa."prova_id" = $1 AND pa."status" IN ('enviada', 'corrigida') AND q."tipo" IN ('multipla_escolha', 'verdadeiro_falso') AND ra."alternativa_id" IS NOT NULL ON CONFLICT ("resposta_id") DO UPDATE SET "nota" = EXCLUDED."nota", "tipo" = 'automatica', "corrigida_em" = CURRENT_TIMESTAMP;` |
-| **Proposições lógicas** | $A$: A resposta pertence à prova informada (`pa."prova_id" = $1`) <br> $B$: O aluno já enviou a prova (`pa."status" IN ('enviada', 'corrigida')`) <br> $C$: A questão é objetiva (`q."tipo" IN ('multipla_escolha', 'verdadeiro_falso')`) <br> $D$: O aluno selecionou uma alternativa (`ra."alternativa_id" IS NOT NULL`) |
-| **Expressão lógica proposicional** | $A \land B \land C \land D$ |
-| **Tabela Verdade** | <table><thead><tr><th>$A$</th><th>$B$</th><th>$C$</th><th>$D$</th><th>$A \land B \land C \land D$</th></tr></thead><tbody><tr><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td></tr><tr><td>F</td><td>F</td><td>F</td><td>V</td><td>F</td></tr><tr><td>F</td><td>F</td><td>V</td><td>F</td><td>F</td></tr><tr><td>F</td><td>F</td><td>V</td><td>V</td><td>F</td></tr><tr><td>F</td><td>V</td><td>F</td><td>F</td><td>F</td></tr><tr><td>F</td><td>V</td><td>F</td><td>V</td><td>F</td></tr><tr><td>F</td><td>V</td><td>V</td><td>F</td><td>F</td></tr><tr><td>F</td><td>V</td><td>V</td><td>V</td><td>F</td></tr><tr><td>V</td><td>F</td><td>F</td><td>F</td><td>F</td></tr><tr><td>V</td><td>F</td><td>F</td><td>V</td><td>F</td></tr><tr><td>V</td><td>F</td><td>V</td><td>F</td><td>F</td></tr><tr><td>V</td><td>F</td><td>V</td><td>V</td><td>F</td></tr><tr><td>V</td><td>V</td><td>F</td><td>F</td><td>F</td></tr><tr><td>V</td><td>V</td><td>F</td><td>V</td><td>F</td></tr><tr><td>V</td><td>V</td><td>V</td><td>F</td><td>F</td></tr><tr><td>V</td><td>V</td><td>V</td><td>V</td><td>V</td></tr></tbody></table> |
+Descricao: baseada em QuestaoRepository.findMany, filtra por vinculo professor/materia, questao ativa e busca ILIKE.
 
-**Descrição:**
-Essa consulta (UPSERT) realiza a correção automática de questões objetivas: insere um registro de correção com a pontuação máxima para cada resposta de múltipla escolha ou verdadeiro/falso que o aluno respondeu. Se já existir uma correção anterior, a nota é sobrescrita. A query utiliza JOINs entre 5 tabelas (`resposta_aluno`, `prova_aluno`, `prova_questao`, `questao`, `alternativa`) e condições com `IN` e `IS NOT NULL`. Fonte: `correcao.repository.ts`.
+| Proposicao | Significado |
+|------------|-------------|
+| A | Existe vinculo entre materia da questao e professor autenticado. |
+| B | A questao esta ativa. |
+| C | O enunciado atende ao filtro ILIKE. |
 
----
+Expressao logica: A AND B AND C.
 
+| A | B | C | Resultado |
+|---|---|---|-----------|
+| F | F | F | F |
+| F | V | V | F |
+| V | F | V | F |
+| V | V | F | F |
+| V | V | V | V |
 
-| #4 | --- |
-| --- | --- |
-| **Expressão SQL** | `DELETE FROM "prova_questao" WHERE "prova_id" = $1 AND "questao_id" = $2` |
-| **Proposições lógicas** | $A$: A associação pertence à prova informada (`"prova_id" = $1`) <br> $B$: A associação é da questão informada (`"questao_id" = $2`) |
-| **Expressão lógica proposicional** | $A \land B$ |
-| **Tabela Verdade** | <table><thead><tr><th>$A$</th><th>$B$</th><th>$A \land B$</th></tr></thead><tbody><tr><td>F</td><td>F</td><td>F</td></tr><tr><td>F</td><td>V</td><td>F</td></tr><tr><td>V</td><td>F</td><td>F</td></tr><tr><td>V</td><td>V</td><td>V</td></tr></tbody></table> |
+#### Consulta 3 - UPSERT de correcao automatica de objetivas
 
-**Descrição:**
-Essa consulta remove uma associação entre prova e questão na tabela associativa `prova_questao`, garantindo que apenas o vínculo específico seja deletado por meio de duas condições combinadas com AND. Fonte: `prova-questao.repository.ts`.
+~~~sql
+INSERT INTO "correcao" ("resposta_id", "professor_id", "nota", "tipo", "corrigida_em")
+SELECT
+  ra."id",
+  $2,
+  CASE WHEN a."correta" = TRUE THEN pq."pontuacao_max" ELSE 0 END,
+  'automatica',
+  CURRENT_TIMESTAMP
+FROM "resposta_aluno" ra
+JOIN "prova_aluno" pa ON pa."id" = ra."prova_aluno_id"
+JOIN "prova_questao" pq ON pq."prova_id" = pa."prova_id" AND pq."questao_id" = ra."questao_id"
+JOIN "questao" q ON q."id" = ra."questao_id"
+JOIN "alternativa" a ON a."id" = ra."alternativa_id"
+WHERE pa."prova_id" = $1
+  AND pa."status" IN ('enviada', 'corrigida')
+  AND q."tipo" IN ('multipla_escolha', 'verdadeiro_falso')
+  AND ra."alternativa_id" IS NOT NULL
+ON CONFLICT ("resposta_id") DO UPDATE
+SET "nota" = EXCLUDED."nota",
+    "tipo" = 'automatica',
+    "corrigida_em" = CURRENT_TIMESTAMP;
+~~~
 
----
+Descricao: query real de CorrecaoRepository.corrigirObjetivas.
 
+| Proposicao | Significado |
+|------------|-------------|
+| A | A resposta pertence a prova informada. |
+| B | A prova do aluno esta enviada ou corrigida. |
+| C | A questao e objetiva. |
+| D | A resposta possui alternativa marcada. |
 
-| #5 | --- |
-| --- | --- |
-| **Expressão SQL** | `INSERT INTO questao (titulo, tipo, ativa) VALUES ('Questão sobre lógica', 'multipla_escolha', true);` |
-| **Proposições lógicas** | $A$: O título da questão foi informado (`titulo IS NOT NULL`) <br> $B$: O tipo da questão é múltipla escolha (`tipo = 'multipla_escolha'`) <br> $C$: A questão está ativa (`ativa = true`) |
-| **Expressão lógica proposicional** | $A \land B \land C$ |
-| **Tabela Verdade** | <table><thead><tr><th>$A$</th><th>$B$</th><th>$C$</th><th>$A \land B$</th><th>$A \land B \land C$</th></tr></thead><tbody><tr><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td></tr><tr><td>F</td><td>F</td><td>V</td><td>F</td><td>F</td></tr><tr><td>F</td><td>V</td><td>F</td><td>F</td><td>F</td></tr><tr><td>F</td><td>V</td><td>V</td><td>F</td><td>F</td></tr><tr><td>V</td><td>F</td><td>F</td><td>F</td><td>F</td></tr><tr><td>V</td><td>F</td><td>V</td><td>F</td><td>F</td></tr><tr><td>V</td><td>V</td><td>F</td><td>V</td><td>F</td></tr><tr><td>V</td><td>V</td><td>V</td><td>V</td><td>V</td></tr></tbody></table> |
+Expressao logica: A AND B AND C AND D.
 
-**Descrição:**
-Essa consulta insere uma nova questão ativa de múltipla escolha no banco de dados.
+| A | B | C | D | Resultado |
+|---|---|---|---|-----------|
+| F | F | F | F | F |
+| F | V | V | V | F |
+| V | F | V | V | F |
+| V | V | F | V | F |
+| V | V | V | F | F |
+| V | V | V | V | V |
 
+#### Consulta 4 - remocao de questao de uma prova
 
+~~~sql
+DELETE FROM "prova_questao"
+WHERE "prova_id" = $1
+  AND "questao_id" = $2;
+~~~
+
+Descricao: query real de ProvaQuestaoRepository.remover.
+
+| Proposicao | Significado |
+|------------|-------------|
+| A | O vinculo pertence a prova informada. |
+| B | O vinculo aponta para a questao informada. |
+
+Expressao logica: A AND B.
+
+| A | B | Resultado |
+|---|---|-----------|
+| F | F | F |
+| F | V | F |
+| V | F | F |
+| V | V | V |
 
 ## 3.7. WebAPI e endpoints (sprints 3 e 4)
 
-*Utilize um link para outra página de documentação contendo a descrição completa de cada endpoint. Ou descreva aqui cada endpoint criado para seu sistema.* 
+A WebAPI esta implementada em Fastify, documentada por Swagger UI em /docs e registrada sob o prefixo /api/v1. A documentacao OpenAPI e gerada a partir dos schemas Zod usados nas rotas.
 
-*Cada endpoint deve conter endereço, método (GET, POST, PUT, PATCH, DELETE), header, body, formatos de response e os status codes possíveis (200, 201, 204, 400, 401, 403, 404, 409, 422, 500).*
+| Item | Padrao |
+|------|--------|
+| Base URL | /api/v1 |
+| Swagger UI | /docs |
+| Header protegido | Authorization: Bearer <token> |
+| Content-Type | application/json; uploads usam multipart/form-data |
+| Sucesso | { "success": true, "data": ..., "meta": ... } |
+| Erro | { "success": false, "error": { "code": "...", "message": "...", "details": ... } } |
+| Status comuns | 200, 201, 204, 400, 401, 403, 404, 409, 422 e 500 |
+
+| Dominio | Metodo | Rota | Entrada | Resposta | Status | RF/RN |
+|---------|--------|------|---------|----------|--------|-------|
+| Saude | GET | /api/v1/health | Sem body | Status da aplicacao | 200 | RNF disponibilidade |
+| Saude | GET | /api/v1/health/db | Sem body | Status do PostgreSQL | 200, 500 | RNF disponibilidade |
+| Auth | GET | /api/v1/auth/google | Sem body | Inicio OAuth | 200, 302 | RF002/RN18 |
+| Auth | GET | /api/v1/auth/google/callback | Query OAuth | Token/sessao | 200, 401, 422 | RF002/RN18 |
+| Auth | GET | /api/v1/auth/me | Bearer token | Usuario autenticado | 200, 401 | RF002/RN18/RN19 |
+| Auth | POST | /api/v1/auth/logout | Bearer token | Logout | 200, 401 | RF002 |
+| Provas | POST | /api/v1/provas | Body da prova | Prova em rascunho | 201, 401, 403, 422 | RF001/RF021 |
+| Provas | GET | /api/v1/provas | Filtros status, turma, semestre, materia, professor | Lista filtrada | 200, 401, 403, 422 | RF001/RF022 |
+| Provas | GET/PUT/DELETE | /api/v1/provas/:provaId | Path e body quando edicao | Detalhe, edicao ou remocao | 200, 204, 401, 403, 404, 409, 422 | RF001/RF021 |
+| Provas | GET | /api/v1/provas/:provaId/status-historico | Path provaId | Historico | 200, 401, 403, 404, 422 | RF020 |
+| Provas | PATCH | /api/v1/provas/:provaId/configuracoes | Datas, tempo e embaralhamento | Configuracoes | 200, 401, 403, 404, 409, 422 | RF007/RF023 |
+| Provas | POST | /api/v1/provas/:provaId/publicar | Configuracao | URL e QR Code | 200, 401, 403, 404, 409, 422 | RF008 |
+| Provas | POST | /api/v1/provas/:provaId/encerrar | Path provaId | Prova encerrada | 200, 401, 403, 404, 409, 422 | RF001 |
+| Provas | POST | /api/v1/provas/:provaId/arquivar | Path provaId | Prova antiga | 200, 401, 403, 404, 409, 422 | RF001 |
+| Questoes | POST/GET | /api/v1/questoes | Body ou filtros | Questao criada/listada | 200, 201, 401, 403, 422 | RF003-RF006 |
+| Questoes | GET/PUT/DELETE | /api/v1/questoes/:questaoId | Path e body quando edicao | Detalhe, edicao ou remocao | 200, 204, 401, 403, 404, 409, 422 | RF003-RF006 |
+| Prova-questao | POST/GET | /api/v1/provas/:provaId/questoes | questaoId, ordem, pontuacao | Vinculo/lista | 200, 201, 401, 403, 404, 409, 422 | RF003 |
+| Prova-questao | DELETE | /api/v1/provas/:provaId/questoes/:questaoId | Path provaId/questaoId | Sem conteudo | 204, 401, 403, 404, 409, 422 | RF003 |
+| Portal aluno | GET | /api/v1/public/provas/:urlAcesso | Link publico | Dados publicos da prova | 200, 404, 409, 422 | RF009/RF024/RF025 |
+| Portal aluno | POST | /api/v1/public/provas/:urlAcesso/iniciar | Nome, e-mail, CPF e aceite | prova_aluno e questoes | 201, 404, 409, 422 | RF009 |
+| Respostas | PUT | /api/v1/public/provas-aluno/:provaAlunoId/respostas/:questaoId | Texto, alternativa ou metadados | Resposta salva | 200, 404, 409, 422 | RF010/RF011/RF026 |
+| Respostas | GET | /api/v1/public/provas-aluno/:provaAlunoId/respostas | Path provaAlunoId | Respostas salvas | 200, 404, 422 | RF026 |
+| Respostas | POST | /api/v1/public/provas-aluno/:provaAlunoId/enviar | Confirmacao | Prova enviada | 200, 404, 409, 422 | RF026 |
+| Anexos | POST | /api/v1/public/respostas/:respostaId/anexos | multipart/form-data | Anexo registrado | 201, 400, 404, 409, 422 | RF012/RF013 |
+| Correcao | GET | /api/v1/provas/:provaId/correcao/questoes | Path provaId | Questoes para correcao | 200, 401, 403, 422 | RF014 |
+| Correcao | POST | /api/v1/provas/:provaId/correcao/objetivas | Path provaId | Objetivas corrigidas | 200, 401, 403, 422 | RF014 |
+| Correcao | GET | /api/v1/provas/:provaId/questoes/:questaoId/respostas | Path prova/questao | Respostas para correcao | 200, 401, 403, 422 | RF014/RF016 |
+| Correcao | PUT | /api/v1/respostas/:respostaId/correcao | Nota, observacao, feedback | Correcao salva | 200, 401, 403, 404, 409, 422 | RF015 |
+| Resultados | GET | /api/v1/provas/:provaId/resultados | Path provaId | Resultados consolidados | 200, 401, 403, 422 | RF017/RF019 |
+| Resultados | POST | /api/v1/provas/:provaId/resultados/exportar | Formato | Exportacao registrada | 201, 401, 403, 422 | RF017 |
+| E-mail | POST | /api/v1/provas/:provaId/resultados/liberar-email | Configuracao | E-mails gerados | 200, 401, 403, 422 | RF027 |
+| E-mail | GET | /api/v1/provas/:provaId/emails | Path provaId | Historico de e-mails | 200, 401, 403, 422 | RF027 |
+| E-mail | POST | /api/v1/emails/:emailEnvioId/reenviar | Path emailEnvioId | Reenvio | 200, 401, 403, 404, 422 | RF027 |
+| Analytics | GET | /api/v1/provas/:provaId/analytics | Path provaId | Metricas | 200, 401, 403, 422 | RF019 |
+| Analytics | POST | /api/v1/logs | Evento e contexto | Log registrado | 201, 401, 403, 422 | RF019/RF020 |
+| Anexos | POST | /api/v1/provas/:provaId/anexos/exportar | Filtros/formato | Exportacao de anexos | 201, 401, 403, 422 | RF028 |
+| Coordenador | GET | /api/v1/coordenador/provas | Filtros | Painel de provas | 200, 401, 403, 422 | RF018 |
+| Cadastros | CRUD | /api/v1/professores, /materias, /temas, /alunos | Path/body/query | Cadastro criado/listado/editado/removido | 200, 201, 204, 401, 403, 404, 409, 422 | RF003/RF018/RF009 |
 
 ## 3.8. Autenticação, Autorização e Resiliência (sprint 5)
 
@@ -5213,71 +4686,70 @@ Essa consulta insere uma nova questão ativa de múltipla escolha no banco de da
 
 ## 3.9. Matriz de Rastreabilidade (RTM) (sprints 3 a 5)
 
-A matriz abaixo consolida a rastreabilidade entre Personas, RFs, RNs, Endpoints, Telas e Testes. A coluna "Status/Evidência" reflete o estado atual da implementação ao final da Sprint 3: o backend possui a estrutura completa de camadas (controllers, services, repositories, middlewares, schemas, rotas), migration SQL com triggers, índices e RLS; os endpoints prioritários (RF001 a RF008) estão implementados com validação Zod e Swagger em `/docs`; os fluxos de autenticação, correção automática e resultados ainda necessitam integração frontend.
+A matriz abaixo consolida RF, RN, endpoint, tela e evidencia tecnica a partir das rotas reais em src/backend/src/routes. O status separa backend implementado de pendencias de frontend.
 
-| Persona | RF | RN | Endpoint previsto | Tela | Teste | Status/Evidência |
-|---------|----|----|-------------------|------|-------|------------------|
-| Professor, Coordenador | RF002 | RN18, RN19 | `/auth/google`, `/auth/callback`, `/auth/session` | Login interno | CT-UC01 | Não implementado; evidência parcial em `migration.sql` com `auth_user_id`, funções `auth_*` e RLS |
-| Professor, Coordenador | RF001 | RN01 | `GET /provas` | Home de provas | CT-UC02 | Parcial — controller, service e repository implementados; rota registrada em `prova.routes.ts` |
-| Professor, Coordenador | RF022 | RN02 | `GET /provas?turma=&semestre=&materiaId=&professorId=` | Home de provas com filtros | CT-UC02-FILTROS | Parcial — suporte a filtros no migration (índice `prova_filtros_index`) |
-| Coordenador | RF020 | RN01 | `GET /coordenador/provas?status=` | Gestão de provas do coordenador | CT-UC02-COORD | Parcial — RLS de `prova` configurada; controller e rota scaffold |
-| Professor | RF021 | RN18 | `POST /provas`, `GET /provas/{id}` | Nova prova / Editor de prova | CT-UC03 | Parcial — controller, service e repository com CRUD implementados; trigger `validar_professor_materia_prova` |
-| Professor | RF003 | RN20 | `GET /questoes` | Banco de questões | CT-UC05 | Parcial — controller, service e repository implementados; migration com tabelas `questao`, `tema`, `materia` |
-| Professor | RF004 | RN03 | `POST /questoes` | Nova questão / Editor de questão | CT-UC04-LATEX | Parcial — suporte a enunciado LaTeX em `enunciado.conteudo_latex` |
-| Professor | RF005 | RN03 | `POST /questoes` | Nova questão / Editor de questão | CT-UC04-TIPO | Parcial — enum `questao_tipo` implementado no migration |
-| Professor | RF006 | RN04 | `PUT /questoes/{id}` | Configuração da questão | CT-UC04-ANEXO | Parcial — `questao.permite_anexo` no schema |
-| Professor | RF007 | RN05 | `PUT /provas/{id}/configuracoes` | Configurações da prova | CT-UC06-TEMPO | Parcial — controller `updateConfiguracoes` implementado |
-| Professor | RF023 | RN06 | `PUT /provas/{id}/configuracoes` | Configurações da prova | CT-UC06-EMBARALHAR | Parcial — campos `embaralhar_questoes` e `embaralhar_alternativas` no modelo |
-| Professor | RF008 | RN07 | `POST /provas/{id}/publicar` | Compartilhar prova | CT-UC07 | Parcial — trigger `gerar_qr_code_prova` e `url_acesso` no migration |
-| Aluno | RF024 | RN09 | `GET /public/provas/{token}` | Portal de instruções | CT-UC08-PORTAL | Parcial — policy de RLS para acesso anônimo; controller scaffold |
-| Aluno | RF009 | RN08 | `POST /public/provas/{token}/identificacao` | Identificação do aluno | CT-UC08-ID | Parcial — modelagem de `aluno` com CPF único e consentimento |
-| Aluno | RF025 | RN09 | Sem endpoint próprio | Responder prova | CT-UC09-TIMER | Pendente no frontend; não há implementação atual |
-| Aluno | RF010 | RN10 | Sem endpoint próprio | Responder prova | CT-UC09-ZOOM | Pendente no frontend; não há implementação atual |
-| Aluno | RF011 | RN10 | Sem endpoint próprio | Responder prova | CT-UC09-LATEX | Pendente no frontend; suporte parcial no banco por enunciado em LaTeX |
-| Aluno | RF012 | RN04 | `/respostas/{id}/anexos` | Responder prova / Upload | CT-UC09-UPLOAD | Não implementado; evidência parcial em `resposta_anexo` |
-| Aluno | RF013 | RN11 | Sem endpoint próprio | Responder prova / Upload | CT-UC09-COMPRESSAO | Pendente no frontend; não há implementação atual |
-| Aluno | RF026 | RN12 | `/provas-aluno/{id}/revisao`, `/provas-aluno/{id}/envio-final` | Revisão final | CT-UC11 | Não implementado; evidência parcial em `prova_aluno.status` e `resposta_aluno` |
-| Professor | RF014 | RN13 | `/provas/{id}/correcao/questoes/{questaoId}` | Correção por questão | CT-UC12-LISTAR | Não implementado; evidência parcial em `resposta_aluno` e `correcao` |
-| Professor | RF015 | RN13 | `/respostas/{id}/correcao` | Correção por questão | CT-UC12-NOTA | Não implementado; evidência parcial em `correcao.nota` e `feedback` |
-| Professor | RF016 | RN13 | `/respostas/{id}/anexos` | Correção por questão / Galeria | CT-UC12-ANEXO | Não implementado; evidência parcial em `resposta_anexo` |
-| Professor, Coordenador | RF017 | RN14 | `/provas/{id}/resultados/exportacao` | Resultados | CT-UC14-EXCEL | Não implementado; evidência parcial em `resultado_aluno`, `relatorio`, `exportacao_resultado` |
-| Coordenador | RF018 | RN17 | `/coordenador/provas` | Painel do coordenador | CT-UC14-COORD | Não implementado; evidência parcial em RLS de coordenador |
-| Coordenador | RF019 | RN17 | `/coordenador/relatorios`, `/coordenador/analytics` | Relatórios / Analytics | CT-UC16 | Não implementado; evidência parcial em `relatorio` e `avaliacao_log` |
-| Professor, Coordenador | RF027 | RN15 | `/provas/{id}/resultados/liberacao-email` | Liberação de resultados | CT-UC15 | Não implementado; evidência parcial em `email_envio` |
-| Coordenador | RF028 | RN16 | `/provas/{id}/anexos/exportacao` | Exportação de anexos | CT-UC14-ANEXOS | Não implementado; evidência parcial em `exportacao_resultado` e `resposta_anexo` |
+| Persona | RF | RN | Endpoint real ou suporte tecnico | Tela relacionada | Evidencia | Status |
+|---------|----|----|----------------------------------|------------------|-----------|--------|
+| Professor, Coordenador | RF002 | RN18, RN19 | GET /api/v1/auth/google; GET /api/v1/auth/google/callback; GET /api/v1/auth/me; POST /api/v1/auth/logout | Login interno | auth.routes.ts, AuthService, requireRole | Implementado no backend |
+| Professor, Coordenador | RF001 | RN01 | POST/GET/PUT/DELETE /api/v1/provas; GET /api/v1/provas/:provaId/status-historico | Home/editor de provas | prova.routes.ts, ProvaService | Implementado no backend |
+| Professor, Coordenador | RF022 | RN02 | GET /api/v1/provas com filtros | Home com filtros | listProvasQuerySchema, ProvaRepository.findMany | Implementado no backend |
+| Coordenador | RF020 | RN01 | GET /api/v1/coordenador/provas; historico de status | Painel coordenador | coordenador.routes.ts, prova_status_historico | Implementado no backend |
+| Professor | RF021 | RN18 | POST/GET/PUT /api/v1/provas | Nova prova/editor | ProvaController, trigger professor-materia | Implementado no backend |
+| Professor | RF003 | RN20 | CRUD /api/v1/questoes; vinculos /api/v1/provas/:provaId/questoes | Banco de questoes | questao.routes.ts, prova.routes.ts | Implementado no backend |
+| Professor | RF004 | RN03 | POST/PUT /api/v1/questoes com enunciado.conteudoLatex | Editor questao | enunciado.conteudo_latex | Implementado no backend |
+| Professor | RF005 | RN03 | POST/PUT /api/v1/questoes com tipo | Editor questao | enum questao_tipo | Implementado no backend |
+| Professor | RF006 | RN04 | POST/PUT /api/v1/questoes com permite_anexo e limites | Configuracao questao | schema e migration | Implementado no backend |
+| Professor | RF007 | RN05 | PATCH /api/v1/provas/:provaId/configuracoes | Configuracoes prova | ProvaService | Implementado no backend |
+| Professor | RF023 | RN06 | PATCH /api/v1/provas/:provaId/configuracoes | Configuracoes prova | embaralhar_questoes/alternativas | Implementado no backend |
+| Professor | RF008 | RN07 | POST /api/v1/provas/:provaId/publicar | Compartilhar prova | url_acesso, qr_code | Implementado no backend |
+| Aluno | RF024 | RN09 | GET /api/v1/public/provas/:urlAcesso | Portal instrucoes | aluno-portal.routes.ts | Implementado no backend |
+| Aluno | RF009 | RN08 | POST /api/v1/public/provas/:urlAcesso/iniciar | Identificacao aluno | AlunoPortalService | Implementado no backend |
+| Aluno | RF025 | RN09 | Dados de tempo em GET /api/v1/public/provas/:urlAcesso | Timer | API entrega tempo limite | Backend implementado; timer depende do frontend |
+| Aluno | RF010 | RN10 | PUT /api/v1/public/provas-aluno/:provaAlunoId/respostas/:questaoId | Responder prova | RespostaAlunoService | Backend implementado; zoom depende do frontend |
+| Aluno | RF011 | RN10 | Enunciado LaTeX no portal publico | Responder prova | enunciado.conteudo_latex | Backend implementado; renderizacao depende do frontend |
+| Aluno | RF012 | RN04 | POST /api/v1/public/respostas/:respostaId/anexos | Upload | RespostaAnexoService | Implementado no backend |
+| Aluno | RF013 | RN11 | POST /api/v1/public/respostas/:respostaId/anexos | Upload/compressao | validacao de arquivo | Backend implementado; compressao final depende do frontend/storage |
+| Aluno | RF026 | RN12 | GET/PUT respostas; POST enviar | Revisao final | resposta-aluno.routes.ts | Implementado no backend |
+| Professor | RF014 | RN13 | GET correcao/questoes e respostas por questao | Correcao | correcao.routes.ts | Implementado no backend |
+| Professor | RF015 | RN13 | PUT /api/v1/respostas/:respostaId/correcao | Correcao manual | CorrecaoRepository | Implementado no backend |
+| Professor | RF016 | RN13 | Respostas de correcao retornam anexos | Galeria/anexos | RespostaAnexoRepository | Implementado no backend |
+| Professor, Coordenador | RF017 | RN14 | GET resultados; POST resultados/exportar | Resultados | ResultadoService | Implementado no backend |
+| Coordenador | RF018 | RN17 | GET /api/v1/coordenador/provas; CRUD cadastros | Painel coordenador | coordenador/professor/materia routes | Implementado no backend |
+| Coordenador | RF019 | RN17 | GET /api/v1/provas/:provaId/analytics; POST /api/v1/logs | Analytics | AnalyticsService | Implementado no backend |
+| Professor, Coordenador | RF027 | RN15 | liberar-email, listar emails, reenviar | E-mails | EmailResultadoService | Implementado no backend |
+| Coordenador | RF028 | RN16 | POST /api/v1/provas/:provaId/anexos/exportar | Exportacao anexos | AnexoExportarService | Implementado no backend |
 
 # <a name="c4"></a>4. Desenvolvimento da Aplicação Web
 
-## 4.1. Primeira versão da aplicação web (sprint 3)
+## 4.1. Primeira versao da aplicacao web (sprint 3)
 
-Durante a sprint 3, o desenvolvimento concentrou-se na estruturação inicial da aplicação web, na definição da base técnica do backend e na consolidação dos artefatos arquiteturais necessários para orientar a implementação das próximas etapas. A primeira versão ainda não representa o fluxo completo da plataforma em produção, mas estabelece a base do sistema e reduz incertezas técnicas importantes para as sprints seguintes.
+Durante a sprint 3, a aplicacao deixou de ser apenas uma base tecnica e passou a contar com uma WebAPI operante para os fluxos centrais do dominio. O backend em Fastify esta organizado em controllers, services, repositories, schemas Zod, middlewares de autenticacao/autorizacao e migration PostgreSQL/Supabase com constraints, triggers, indices e RLS. A documentacao interativa esta em /docs e as rotas de dominio sao servidas sob /api/v1.
 
 **(a) O que foi implementado**
 
-- Estrutura inicial do backend em Node.js com Fastify, incluindo configuração de CORS, Swagger UI e validação/serialização com `fastify-type-provider-zod`.
-- Configuração da conexão com PostgreSQL/Supabase por meio de `pg` e variáveis de ambiente.
-- Script de execução de migrations, permitindo aplicar os arquivos SQL versionados do projeto.
-- Migration inicial do banco de dados, contemplando tabelas centrais do domínio, enums, chaves estrangeiras, índices, triggers, funções auxiliares e políticas de Row Level Security (RLS).
-- Estrutura inicial do frontend com Vite/React, servindo como base para a construção das telas da aplicação.
-- Atualização dos artefatos de documentação técnica, incluindo diagramas UML em PlantUML, matriz de rastreabilidade e detalhamento dos casos de uso principais.
+- WebAPI Fastify com Swagger UI em /docs, validacao Zod e envelopes de sucesso/erro.
+- Autenticacao OAuth/JWT com /auth/google, /auth/google/callback, /auth/me e /auth/logout, alem de requireRole nas rotas protegidas.
+- CRUD e ciclo de vida de provas: criacao, listagem, edicao, exclusao, configuracao, publicacao, encerramento, arquivamento e historico.
+- Banco de questoes com materias, temas, LaTeX, tipos, alternativas e vinculo prova-questao.
+- Portal publico do aluno: acesso por URL, identificacao, inicio, respostas, envio final e anexos.
+- Correcao manual e automatica, resultados, exportacao, liberacao por e-mail, reenvio, analytics e exportacao de anexos.
+- Cadastros de professores, materias, temas, alunos, vinculos professor-materia e painel do coordenador.
+- Migration com tabelas do dominio, FKs, indices, triggers de validacao/auditoria e RLS.
+- Testes automatizados de backend para rotas, services, repositories, middlewares e integracao com banco.
 
-**(b) O que não foi concluído**
+**(b) O que nao foi concluido**
 
-- Os endpoints funcionais de domínio ainda não foram implementados no backend.
-- As rotas de autenticação, provas, questões, submissões, correção, resultados e analytics ainda precisam ser codificadas e integradas ao banco.
-- O frontend ainda não contempla os fluxos finais de uso para professor, coordenador e aluno.
-- Os testes automatizados necessários para validar endpoints, regras de negócio e integração com banco ainda não foram finalizados.
-- A integração completa entre frontend, backend e banco de dados ainda está pendente.
+- O frontend ainda precisa consumir todos os fluxos da WebAPI para entregar a experiencia final de professor, coordenador e aluno.
+- Timer visual, zoom, renderizacao final de LaTeX, compressao no cliente e telas completas de analytics/resultados dependem de integracao frontend.
+- A entrega final ainda deve consolidar evidencias visuais ponta a ponta, apesar de o backend ja possuir rotas e testes para os principais RFs.
 
-**(c) Dificuldades técnicas enfrentadas**
+**(c) Dificuldades tecnicas enfrentadas**
 
-A principal dificuldade técnica da sprint foi a adaptação às novas tecnologias utilizadas pelo grupo. A equipe precisou compreender melhor a organização do backend com Fastify, o uso de migrations SQL para modelar regras de negócio no banco e a relação entre autenticação, autorização e RLS no Supabase/PostgreSQL.
+A principal dificuldade foi manter coerencia entre regras de negocio, WebAPI e banco. O time precisou ajustar validacoes em Zod, services, repositories e triggers/constraints no PostgreSQL, alem de separar rotas publicas do portal do aluno das rotas protegidas por professor ou coordenador.
 
-Também houve uma curva de aprendizado relacionada ao PlantUML. A ferramenta se mostrou versátil para representar diferentes visões do sistema, mas exigiu atenção à sintaxe, à escolha correta dos tipos de participantes e à coerência semântica dos diagramas com o restante do projeto.
+**(d) Proximos passos**
 
-**(d) Próximos passos**
-
-Os próximos passos são programar o frontend, implementar os endpoints principais do backend e finalizar os testes necessários para o projeto. A prioridade será transformar a modelagem já documentada em fluxos funcionais, integrando as telas às rotas da API e validando os cenários centrais com testes automatizados e evidências de funcionamento.
+Integrar o frontend as rotas ja documentadas e produzir evidencias navegaveis: login, criacao/publicacao de prova, acesso publico do aluno, envio de respostas/anexos, correcao, resultados, e-mails e analytics.
 
 ## 4.2. Segunda versão da aplicação web (sprint 4)
 
