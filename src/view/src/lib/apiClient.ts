@@ -1,6 +1,6 @@
 import { notifySessionExpired } from "../features/auth/auth.events";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3333/api/v1";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://pablo-marchina.github.io/instituto_ponte/api/v1";
 const DEFAULT_TIMEOUT_MS = 8_000;
 const MAX_RETRIES = 2;
 const CIRCUIT_FAILURE_THRESHOLD = 5;

@@ -71,8 +71,8 @@ jobs:
           fi
 
           if [ -z "$CONFIGURED_API_BASE_URL" ]; then
-            echo "::warning::VITE_API_BASE_URL nao foi configurada. O Pages sera publicado, mas os fluxos reais precisam de uma WebAPI publica HTTPS."
-            configured_api_base_url="http://localhost:3333/api/v1"
+            echo "::warning::VITE_API_BASE_URL nao foi configurada. Usando o endpoint padrao do GitHub Pages."
+            configured_api_base_url="https://${owner_name}.github.io/${repo_name}/api/v1"
           else
             configured_api_base_url="$CONFIGURED_API_BASE_URL"
           fi

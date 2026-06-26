@@ -16,7 +16,7 @@ const getGoogleClientId = () => {
 };
 
 const getGoogleRedirectUri = () =>
-  process.env.GOOGLE_REDIRECT_URI ?? "http://localhost:5173/auth/callback";
+  process.env.GOOGLE_REDIRECT_URI ?? "https://pablo-marchina.github.io/instituto_ponte/auth/callback";
 
 /**
  * Autenticação e gerenciamento de sessão via Google OAuth.

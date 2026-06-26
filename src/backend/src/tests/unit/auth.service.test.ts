@@ -58,7 +58,7 @@ describe("AuthService - unitário", () => {
       delete process.env.GOOGLE_REDIRECT_URI;
       const service = new AuthService(makeMockRepo());
       const url = service.getGoogleRedirectUrl();
-      expect(url).toContain("redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fauth%2Fcallback");
+      expect(url).toContain("redirect_uri=https%3A%2F%2Fpablo-marchina.github.io%2Finstituto_ponte%2Fauth%2Fcallback");
     });
 
     it("deve incluir escopos openid email profile", () => {

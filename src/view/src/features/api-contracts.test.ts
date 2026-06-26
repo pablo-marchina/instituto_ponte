@@ -306,7 +306,7 @@ describe("feature API contracts", () => {
     provas.createProva({ titulo: "P", materiaId: "m1", turma: "A", semestre: "2026.1", modalidade: "online" });
     provas.updateProva("prova1", { titulo: "P2" });
     provas.updateProvaConfiguracoes("prova1", { tempoLimiteMin: 60 });
-    provas.publicarProva("prova1", { baseUrlAluno: "http://localhost:5173/aluno/prova", dataFim: "2026-07-01T15:00:00.000Z" });
+    provas.publicarProva("prova1", { baseUrlAluno: "https://pablo-marchina.github.io/instituto_ponte/aluno/prova", dataFim: "2026-07-01T15:00:00.000Z" });
     provas.getProva("prova1");
     provas.arquivarProva("prova1");
     provas.listProvaQuestoes("prova1");
