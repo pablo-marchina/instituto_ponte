@@ -61,6 +61,11 @@ export class ProvaController {
     );
   };
 
+  despublicar = async (request: FastifyRequest, reply: FastifyReply) => {
+    const { provaId } = request.params as { provaId: string };
+    return sendSuccess(reply, await this.provaService.despublicar(provaId, getAuthenticatedUser(request)));
+  };
+
   encerrar = async (request: FastifyRequest, reply: FastifyReply) => {
     const { provaId } = request.params as { provaId: string };
     return sendSuccess(reply, await this.provaService.encerrar(provaId, getAuthenticatedUser(request)));

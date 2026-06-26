@@ -27,6 +27,7 @@ export async function resultadoRoutes(app: FastifyInstance) {
           200: successResponseSchema(z.array(resultadoAlunoSchema)),
           401: errorResponseSchema,
           403: errorResponseSchema,
+          404: errorResponseSchema,
           422: errorResponseSchema,
         },
       },
@@ -37,7 +38,7 @@ export async function resultadoRoutes(app: FastifyInstance) {
   app.withTypeProvider().post(
     "/provas/:provaId/resultados/exportar",
     {
-      preHandler: requireRole("coordenador"),
+      preHandler: requireRole("professor", "coordenador"),
       schema: {
         tags: ["Resultados"],
         summary: "Exportar resultados",
@@ -49,6 +50,7 @@ export async function resultadoRoutes(app: FastifyInstance) {
           201: successResponseSchema(exportacaoResultadoSchema),
           401: errorResponseSchema,
           403: errorResponseSchema,
+          404: errorResponseSchema,
           422: errorResponseSchema,
         },
       },

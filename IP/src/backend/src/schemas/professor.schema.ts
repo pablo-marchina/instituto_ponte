@@ -29,5 +29,14 @@ export const professorResponseSchema = z.object({
   atualizadoEm: z.string().datetime().describe("Data e hora da última atualização."),
 });
 
+export const professorMateriaResponseSchema = z.object({
+  id: z.string().uuid().describe("Identificador único da matéria."),
+  nome: z.string().describe("Nome da matéria."),
+  codigo: z.string().nullable().describe("Código da matéria."),
+  descricao: z.string().nullable().describe("Descrição da matéria."),
+  criadoEm: z.string().datetime().describe("Data e hora de criação."),
+  atualizadoEm: z.string().datetime().describe("Data e hora da última atualização."),
+});
+
 export type CreateProfessorInput = z.infer<typeof createProfessorBodySchema>;
 export type UpdateProfessorInput = z.infer<typeof updateProfessorBodySchema>;

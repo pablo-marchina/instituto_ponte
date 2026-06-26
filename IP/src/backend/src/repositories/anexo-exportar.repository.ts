@@ -1,5 +1,6 @@
 import { pool } from "../database/pool.js";
 
+/** Linha bruta de anexo com JOINs para resposta_aluno, prova_aluno e aluno. */
 type AnexoExportarRow = {
   id: string;
   nome_arquivo: string | null;
@@ -13,7 +14,19 @@ type AnexoExportarRow = {
   criado_em: Date;
 };
 
+/**
+ * Repositório de consulta de anexos para exportação/zip de uma prova.
+ *
+ * JOIN com resposta_aluno, prova_aluno e aluno para associar anexos
+ * aos alunos e questões. Ordenado por nome do aluno e data de criação.
+ */
 export class AnexoExportarRepository {
+  /**
+   * Verifica se uma prova existe pelo ID.
+   *
+   * @param provaId - ID da prova.
+   * @returns true se a prova existir.
+   */
   async findProvaExists(provaId: string) {
     const result = await pool.query(
       'SELECT EXISTS (SELECT 1 FROM "prova" WHERE "id" = $1) AS "exists"',
@@ -22,6 +35,12 @@ export class AnexoExportarRepository {
     return result.rows[0].exists as boolean;
   }
 
+  /**
+   * Lista todos os anexos de uma prova com dados do aluno para exportação.
+   *
+   * @param provaId - ID da prova.
+   * @returns Lista de anexos com dados do aluno.
+   */
   async findAnexosPorProva(provaId: string) {
     const result = await pool.query<AnexoExportarRow>(
       `SELECT

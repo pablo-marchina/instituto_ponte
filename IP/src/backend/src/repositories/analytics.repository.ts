@@ -1,6 +1,7 @@
 import { pool } from "../database/pool.js";
-import type { AuthUser } from "../middlewares/auth.js";
+import type { AuthUser } from "../models/auth.model.js";
 
+/** Linha de métricas agregadas de uma prova com contagens por tipo. */
 type AnalyticsRow = {
   totalAlunos: string;
   acessos: string;
@@ -11,7 +12,21 @@ type AnalyticsRow = {
   pendenciasCorrecao: string;
 };
 
+/**
+ * Repositório de métricas agregadas de uma prova.
+ *
+ * A consulta usa cinco CTEs combinadas via CROSS JOIN para retornar
+ * todas as métricas (alunos, acessos, respostas, anexos, pendências)
+ * em uma única linha. COALESCE garante 0 em vez de null.
+ */
 export class AnalyticsRepository {
+  /**
+   * Verifica se o usuário tem acesso às analytics da prova.
+   *
+   * @param provaId - ID da prova.
+   * @param user - Usuário autenticado.
+   * @returns true se tiver acesso.
+   */
   async hasAccessToProva(provaId: string, user: AuthUser) {
     if (user.perfil === "coordenador") return true;
 
@@ -35,11 +50,23 @@ export class AnalyticsRepository {
     return result.rows[0]?.exists ?? false;
   }
 
+  /**
+   * Verifica se uma prova existe pelo ID.
+   *
+   * @param provaId - ID da prova.
+   * @returns true se a prova existir.
+   */
   async findProvaExists(provaId: string) {
     const result = await pool.query('SELECT 1 FROM "prova" WHERE "id" = $1', [provaId]);
     return result.rows.length > 0;
   }
 
+  /**
+   * Obtém métricas agregadas de uma prova em uma única consulta.
+   *
+   * @param provaId - ID da prova.
+   * @returns Objeto com totalAlunos, acessos, inicios, envios, totalRespostas, totalAnexos e pendenciasCorrecao.
+   */
   async obterAnalytics(provaId: string) {
     const result = await pool.query<AnalyticsRow>(
       `

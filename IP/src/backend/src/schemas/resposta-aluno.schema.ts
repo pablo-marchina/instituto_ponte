@@ -36,6 +36,11 @@ export const respostaAlunoSchema = respostaSalvaSchema.extend({
   respostaTexto: z.string().nullable().describe("Texto da resposta (discursivas)."),
 });
 
+/**
+ * DTO retornado após a confirmação de envio final da prova.
+ * Inclui a lista de IDs das questões que ficaram sem resposta
+ * (questoesEmBranco) para registro da entrega incompleta.
+ */
 export const envioFinalSchema = z.object({
   provaAlunoId: z.string().uuid().describe("Identificador único da relação prova-aluno."),
   status: z.literal("enviada").describe("Status final da prova após envio."),

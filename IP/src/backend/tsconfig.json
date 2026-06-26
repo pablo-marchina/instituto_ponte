@@ -10,19 +10,7 @@
     "skipLibCheck": true,
     "rootDir": "src",
     "outDir": "dist",
-    "resolveJsonModule": true,
-    "paths": {
-      "@/*": ["./src/*"],
-      "@controllers/*": ["./src/controllers/*"],
-      "@db/*": ["./src/database/*"],
-      "@errors/*": ["./src/errors/*"],
-      "@helpers/*": ["./src/helpers/*"],
-      "@middlewares/*": ["./src/middlewares/*"],
-      "@models/*": ["./src/models/*"],
-      "@repositories/*": ["./src/repositories/*"],
-      "@routes/*": ["./src/routes/*"],
-      "@services/*": ["./src/services/*"]
-    }
+    "resolveJsonModule": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

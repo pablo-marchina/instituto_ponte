@@ -4,6 +4,11 @@ export const analyticsParamsSchema = z.object({
   provaId: z.string().uuid("O provaId deve ser um UUID válido.").describe("Identificador único da prova."),
 });
 
+/**
+ * Métricas de engajamento da prova (funil do aluno):
+ * totalAlunos → acessos → inicios → envios.
+ * A diferença entre cada etapa indica desistências ou abandono.
+ */
 export const analyticsDataSchema = z.object({
   provaId: z.string().uuid().describe("Identificador único da prova."),
   totalAlunos: z.number().int().nonnegative().describe("Total de alunos que iniciaram a prova."),
@@ -15,6 +20,12 @@ export const analyticsDataSchema = z.object({
   pendenciasCorrecao: z.number().int().nonnegative().describe("Total de correções pendentes."),
 });
 
+/**
+ * Corpo para registro de log de auditoria.
+ * atorTipo define qual categoria de usuário gerou o evento,
+ * permitindo rastrear ações de alunos, professores,
+ * coordenadores ou do próprio sistema.
+ */
 export const criarLogBodySchema = z.object({
   provaId: z.string().uuid("provaId deve ser um UUID válido.").optional().describe("Identificador único da prova relacionada ao evento."),
   provaAlunoId: z.string().uuid("provaAlunoId deve ser um UUID válido.").optional().describe("Identificador único da relação prova-aluno."),

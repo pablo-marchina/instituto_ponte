@@ -24,6 +24,11 @@ export class ProfessorController {
     return sendSuccess(reply, await this.service.buscarPorId(professorId, getAuthenticatedUser(request)));
   };
 
+  listarMaterias = async (request: FastifyRequest, reply: FastifyReply) => {
+    const { professorId } = request.params as { professorId: string };
+    return sendSuccess(reply, await this.service.listarMaterias(professorId, getAuthenticatedUser(request)));
+  };
+
   atualizar = async (request: FastifyRequest, reply: FastifyReply) => {
     const { professorId } = request.params as { professorId: string };
     return sendSuccess(

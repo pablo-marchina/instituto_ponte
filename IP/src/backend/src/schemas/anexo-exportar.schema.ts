@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+/**
+ * Item do relatório de anexos para exportação em massa.
+ * Usado pelo coordenador/professor para baixar todos os anexos
+ * enviados pelos alunos em uma prova, agrupados por aluno e questão.
+ */
 export const anexoExportarItemSchema = z.object({
   id: z.string().uuid().describe("Identificador único do anexo."),
   nomeArquivo: z.string().nullable().describe("Nome original do arquivo."),

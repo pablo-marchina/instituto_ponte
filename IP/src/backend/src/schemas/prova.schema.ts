@@ -26,6 +26,7 @@ export const provaSchema = z.object({
   status: provaStatusSchema,
   urlAcesso: z.string().nullable().describe("URL única de acesso para o aluno."),
   qrCode: z.string().nullable().describe("Payload do QR Code para acesso rápido."),
+  submissoes: z.number().int().nonnegative().describe("Quantidade de alunos que enviaram a prova."),
   criadoEm: z.string().datetime().describe("Data e hora de criação do registro."),
   atualizadoEm: z.string().datetime().describe("Data e hora da última atualização."),
   materia: z
@@ -46,6 +47,11 @@ export const provaDetailSchema = provaSchema.extend({
   questoes: z.array(z.unknown()).default([]).describe("Lista de questões associadas à prova."),
 });
 
+/**
+ * Auditoria de transições de status da prova.
+ * Cada registro documenta uma mudança no ciclo de vida:
+ * rascunho → publicada → encerrada → antiga.
+ */
 export const provaHistoricoSchema = z.object({
   id: z.string().uuid().describe("Identificador único do registro de histórico."),
   statusAnterior: provaStatusSchema.nullable().describe("Status anterior da prova antes da transição."),
@@ -90,6 +96,7 @@ export const createProvaBodySchema = z
 
 export const updateProvaBodySchema = z
   .object({
+    materiaId: createProvaShape.materiaId,
     titulo: createProvaShape.titulo,
     modalidade: createProvaShape.modalidade,
     turma: createProvaShape.turma,
@@ -132,8 +139,13 @@ export const updateProvaConfiguracoesBodySchema = z
 export const publicarProvaBodySchema = z
   .object({
     baseUrlAluno: z.string().url("A baseUrlAluno deve ser uma URL válida.").describe("URL base do frontend para gerar o link de acesso do aluno."),
+    dataFim: z.string().datetime("A data limite deve estar em formato ISO.").describe("Data e hora limite da prova."),
   })
-  .strict();
+  .strict()
+  .refine((data) => new Date(data.dataFim).getTime() > Date.now(), {
+    path: ["dataFim"],
+    message: "A data limite deve ser futura.",
+  });
 
 export const provaParamsSchema = z.object({
   provaId: z.string().uuid("O provaId deve ser um UUID válido.").describe("Identificador único da prova."),

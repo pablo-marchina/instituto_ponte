@@ -1,0 +1,17 @@
+{
+  "name": "instituto-ponte-web",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix src/backend ci && npm --prefix src/view ci",
+    "migrate": "npm --prefix src/backend run migrate",
+    "migrate:cpf": "npm --prefix src/backend run migrate:cpf",
+    "lint": "npm --prefix src/view run lint",
+    "typecheck": "npm --prefix src/backend run typecheck && npm --prefix src/view run typecheck",
+    "build": "npm --prefix src/backend run build && npm --prefix src/view run build",
+    "test": "npm --prefix src/backend test && npm --prefix src/view test",
+    "coverage": "npm --prefix src/backend run test:coverage && npm --prefix src/view run test:coverage",
+    "audit": "npm --prefix src/backend audit --omit=dev && npm --prefix src/view audit --omit=dev",
+    "load:test": "node scripts/load-test.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run coverage && npm run audit && npm run load:test"
+  }
+}

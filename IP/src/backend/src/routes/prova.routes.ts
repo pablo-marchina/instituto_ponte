@@ -9,6 +9,7 @@ import {
   provaQuestaoDeleteParamsSchema,
   provaQuestaoParamsSchema,
   provaQuestaoResponseSchema,
+  reorderQuestaoProvaBodySchema,
 } from "../schemas/prova-questao.schema.js";
 import {
   createProvaBodySchema,
@@ -30,7 +31,7 @@ export async function provaRoutes(app: FastifyInstance) {
   app.withTypeProvider().post(
     "/provas",
     {
-      preHandler: requireRole("professor"),
+      preHandler: requireRole("professor", "coordenador"),
       schema: {
         tags: ["Provas"],
         summary: "Criar prova em rascunho",
@@ -163,7 +164,7 @@ export async function provaRoutes(app: FastifyInstance) {
   app.withTypeProvider().patch(
     "/provas/:provaId/configuracoes",
     {
-      preHandler: requireRole("professor"),
+      preHandler: requireRole("professor", "coordenador"),
       schema: {
         tags: ["Provas"],
         summary: "Atualizar configurações da prova",
@@ -187,7 +188,7 @@ export async function provaRoutes(app: FastifyInstance) {
   app.withTypeProvider().post(
     "/provas/:provaId/publicar",
     {
-      preHandler: requireRole("professor"),
+      preHandler: requireRole("professor", "coordenador"),
       schema: {
         tags: ["Publicação"],
         summary: "Publicar prova",
@@ -206,6 +207,29 @@ export async function provaRoutes(app: FastifyInstance) {
       },
     },
     controller.publicar,
+  );
+
+  app.withTypeProvider().post(
+    "/provas/:provaId/despublicar",
+    {
+      preHandler: requireRole("professor", "coordenador"),
+      schema: {
+        tags: ["Publicacao"],
+        summary: "Tirar prova da publicacao",
+        description:
+          "Remove o link publico de uma prova publicada e retorna a prova para rascunho. A operacao e bloqueada quando ja existem tentativas ou submissoes de alunos.",
+        params: provaParamsSchema,
+        response: {
+          200: successResponseSchema(provaSchema),
+          401: errorResponseSchema,
+          403: errorResponseSchema,
+          404: errorResponseSchema,
+          409: errorResponseSchema,
+          422: errorResponseSchema,
+        },
+      },
+    },
+    controller.despublicar,
   );
 
   app.withTypeProvider().post(
@@ -257,7 +281,7 @@ export async function provaRoutes(app: FastifyInstance) {
   app.withTypeProvider().post(
     "/provas/:provaId/questoes",
     {
-      preHandler: requireRole("professor"),
+      preHandler: requireRole("professor", "coordenador"),
       schema: {
         tags: ["Questões"],
         summary: "Adicionar questão à prova",
@@ -303,7 +327,7 @@ export async function provaRoutes(app: FastifyInstance) {
   app.withTypeProvider().delete(
     "/provas/:provaId/questoes/:questaoId",
     {
-      preHandler: requireRole("professor"),
+      preHandler: requireRole("professor", "coordenador"),
       schema: {
         tags: ["Questões"],
         summary: "Remover questão da prova",
@@ -321,5 +345,29 @@ export async function provaRoutes(app: FastifyInstance) {
       },
     },
     provaQuestaoController.remover,
+  );
+
+  app.withTypeProvider().patch(
+    "/provas/:provaId/questoes/:questaoId/ordem",
+    {
+      preHandler: requireRole("professor", "coordenador"),
+      schema: {
+        tags: ["Questoes"],
+        summary: "Reordenar questao da prova",
+        description:
+          "Move uma questao dentro da prova e recompata a ordem das demais questoes. A prova deve estar em rascunho.",
+        params: provaQuestaoDeleteParamsSchema,
+        body: reorderQuestaoProvaBodySchema,
+        response: {
+          200: successResponseSchema(z.array(provaQuestaoResponseSchema)),
+          401: errorResponseSchema,
+          403: errorResponseSchema,
+          404: errorResponseSchema,
+          409: errorResponseSchema,
+          422: errorResponseSchema,
+        },
+      },
+    },
+    provaQuestaoController.reordenar,
   );
 }

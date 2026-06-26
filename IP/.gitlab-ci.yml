@@ -1,0 +1,56 @@
+image: node:22
+
+stages:
+  - test
+  - deploy
+
+cache:
+  key:
+    files:
+      - src/view/package-lock.json
+  paths:
+    - src/view/.npm/
+
+frontend-check:
+  stage: test
+  script:
+    - cd src/view
+    - npm ci --cache .npm --prefer-offline
+    - npm run typecheck
+    - npm test -- --run src/features/api-contracts.test.ts
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
+deploy-pages:
+  stage: deploy
+  needs:
+    - frontend-check
+  script:
+    - |
+      if [ -z "$VITE_API_BASE_URL" ]; then
+        echo "AVISO: VITE_API_BASE_URL nao foi configurada. O Pages sera publicado, mas o app so funcionara quando a variavel apontar para uma WebAPI publica."
+        export VITE_API_BASE_URL="http://localhost:3333/api/v1"
+      fi
+    - |
+      if [ -z "$VITE_BASE_PATH" ]; then
+        if [ "$CI_PROJECT_NAME" = "${CI_PROJECT_ROOT_NAMESPACE}.gitlab.io" ]; then
+          export VITE_BASE_PATH="/"
+        else
+          export VITE_BASE_PATH="/${CI_PROJECT_NAME}/"
+        fi
+      fi
+    - export VITE_ALUNO_BASE_URL="${VITE_ALUNO_BASE_URL:-${CI_PAGES_URL}/aluno/prova}"
+    - cd src/view
+    - npm ci --cache .npm --prefer-offline
+    - npm run build
+    - cp dist/index.html dist/404.html
+    - cd ../..
+    - rm -rf public
+    - cp -a src/view/dist public
+  pages:
+    publish: public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

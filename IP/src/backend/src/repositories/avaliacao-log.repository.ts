@@ -1,12 +1,25 @@
 import { pool } from "../database/pool.js";
 
+/** Linha bruta da tabela `avaliacao_log`. Campos em snake_case. */
 type LogRow = {
   id: string;
   acao: string;
   criado_em: string;
 };
 
+/**
+ * Repositório de auditoria de ações durante a avaliação.
+ *
+ * Registra eventos (início, pausa, envio) com metadados do ator
+ * e detalhes em JSONB. Usado para rastreamento e analytics.
+ */
 export class AvaliacaoLogRepository {
+  /**
+   * Cria um registro de log de auditoria.
+   *
+   * @param input - Dados do log: provaId, provaAlunoId, atorTipo, atorId, acao e detalhes opcionais.
+   * @returns Registro criado com id, acao e criadoEm.
+   */
   async create(input: {
     provaId?: string;
     provaAlunoId?: string;

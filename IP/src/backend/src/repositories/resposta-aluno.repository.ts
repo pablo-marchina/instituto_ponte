@@ -2,8 +2,10 @@ import type { PoolClient } from "pg";
 import { pool } from "../database/pool.js";
 import { withTransaction } from "../database/transaction.js";
 import { toIsoString } from "../helpers/date.js";
+import type { RespostaSalva, RespostaAluno, ProvaAlunoContext, QuestaoResposta, EnvioFinal } from "../models/resposta.model.js";
 import type { SalvarRespostaInput } from "../schemas/resposta-aluno.schema.js";
 
+/** Linha bruta da tabela `prova_aluno` com JOIN em `prova`. Campos em snake_case. */
 type ProvaAlunoContextRow = {
   id: string;
   prova_id: string;
@@ -11,14 +13,18 @@ type ProvaAlunoContextRow = {
   prova_status: string;
   data_inicio: Date | string | null;
   data_fim: Date | string | null;
+  inicio_em: Date | string | null;
+  tempo_limite_min: number | null;
 };
 
+/** Linha resumo da tabela `questao` para validação de tipo e limites. */
 type QuestaoRespostaRow = {
   id: string;
   tipo: "multipla_escolha" | "verdadeiro_falso" | "discursiva";
   limite_caracteres: number | null;
 };
 
+/** Linha bruta da tabela `resposta_aluno`. Campos em snake_case. */
 type RespostaRow = {
   id: string;
   prova_aluno_id: string;
@@ -29,19 +35,24 @@ type RespostaRow = {
   sincronizada_em: Date | string;
 };
 
+/** Linha da tabela `prova_aluno` após atualização de envio. */
 type EnvioRow = {
   id: string;
   status: "enviada";
   enviada_em: Date | string | null;
 };
 
-const mapRespostaSalva = (row: RespostaRow) => ({
+/** Converte uma RespostaRow para o modelo RespostaSalva (camelCase).
+ *  Retorna apenas id, sincronizadaEm e rascunho — usado como retorno do upsert. */
+const mapRespostaSalva = (row: RespostaRow): RespostaSalva => ({
   id: row.id,
   sincronizadaEm: toIsoString(row.sincronizada_em) ?? "",
   rascunho: row.rascunho,
 });
 
-const mapResposta = (row: RespostaRow) => ({
+/** Converte uma RespostaRow para o modelo RespostaAluno (camelCase).
+ *  Estende mapRespostaSalva adicionando provaAlunoId, questaoId, alternativaId e respostaTexto. */
+const mapResposta = (row: RespostaRow): RespostaAluno => ({
   ...mapRespostaSalva(row),
   provaAlunoId: row.prova_aluno_id,
   questaoId: row.questao_id,
@@ -49,8 +60,22 @@ const mapResposta = (row: RespostaRow) => ({
   respostaTexto: row.resposta_texto,
 });
 
+/**
+ * Repositório de respostas dos alunos durante a prova.
+ *
+ * Suporta salvamento incremental (upsert com ON CONFLICT) e rascunhos
+ * parciais. O envio final é uma transação que identifica questões em
+ * branco e marca a prova como enviada.
+ */
 export class RespostaAlunoRepository {
-  async findProvaAlunoContext(provaAlunoId: string, client: PoolClient | typeof pool = pool) {
+  /**
+   * Busca contexto da prova-aluno com JOIN em prova para validação de janela.
+   *
+   * @param provaAlunoId - ID do vínculo prova-aluno.
+   * @param client - Conexão opcional (para uso dentro de transação).
+   * @returns Contexto da prova-aluno ou null.
+   */
+  async findProvaAlunoContext(provaAlunoId: string, client: PoolClient | typeof pool = pool): Promise<ProvaAlunoContext | null> {
     const result = await client.query<ProvaAlunoContextRow>(
       `
         SELECT
@@ -59,7 +84,9 @@ export class RespostaAlunoRepository {
           pa."status",
           p."status" AS "prova_status",
           p."data_inicio",
-          p."data_fim"
+          p."data_fim",
+          pa."inicio_em",
+          p."tempo_limite_min"
         FROM "prova_aluno" pa
         JOIN "prova" p ON p."id" = pa."prova_id"
         WHERE pa."id" = $1
@@ -75,11 +102,20 @@ export class RespostaAlunoRepository {
           provaStatus: result.rows[0].prova_status,
           dataInicio: toIsoString(result.rows[0].data_inicio),
           dataFim: toIsoString(result.rows[0].data_fim),
+          inicioEm: toIsoString(result.rows[0].inicio_em),
+          tempoLimiteMin: result.rows[0].tempo_limite_min,
         }
       : null;
   }
 
-  async findQuestaoDaProva(provaAlunoId: string, questaoId: string) {
+  /**
+   * Busca dados da questão vinculada à prova para validação.
+   *
+   * @param provaAlunoId - ID do vínculo prova-aluno.
+   * @param questaoId - ID da questão.
+   * @returns Dados da questão ou null.
+   */
+  async findQuestaoDaProva(provaAlunoId: string, questaoId: string): Promise<QuestaoResposta | null> {
     const result = await pool.query<QuestaoRespostaRow>(
       `
         SELECT q."id", q."tipo", q."limite_caracteres"
@@ -100,6 +136,13 @@ export class RespostaAlunoRepository {
       : null;
   }
 
+  /**
+   * Verifica se uma alternativa pertence a uma questão.
+   *
+   * @param alternativaId - ID da alternativa.
+   * @param questaoId - ID da questão.
+   * @returns true se a alternativa pertencer à questão.
+   */
   async alternativaBelongsToQuestao(alternativaId: string, questaoId: string) {
     const result = await pool.query(
       'SELECT EXISTS (SELECT 1 FROM "alternativa" WHERE "id" = $1 AND "questao_id" = $2) AS "exists"',
@@ -108,6 +151,17 @@ export class RespostaAlunoRepository {
     return result.rows[0]?.exists ?? false;
   }
 
+  /**
+   * Salva ou atualiza a resposta de um aluno (upsert).
+   *
+   * Usa ON CONFLICT na chave composta (prova_aluno_id, questao_id) para
+   * permitir salvamentos incrementais (rascunho).
+   *
+   * @param provaAlunoId - ID do vínculo prova-aluno.
+   * @param questaoId - ID da questão respondida.
+   * @param input - Dados da resposta: alternativaId, respostaTexto e rascunho.
+   * @returns Dados resumidos da resposta salva.
+   */
   async upsert(provaAlunoId: string, questaoId: string, input: SalvarRespostaInput) {
     const result = await pool.query<RespostaRow>(
       `
@@ -128,10 +182,16 @@ export class RespostaAlunoRepository {
     return mapRespostaSalva(result.rows[0]);
   }
 
+  /**
+   * Lista todas as respostas de um aluno para uma prova.
+   *
+   * @param provaAlunoId - ID do vínculo prova-aluno.
+   * @returns Lista de respostas do aluno.
+   */
   async findByProvaAluno(provaAlunoId: string) {
     const result = await pool.query<RespostaRow>(
       `
-        SELECT *
+        SELECT "id", "prova_aluno_id", "questao_id", "alternativa_id", "resposta_texto", "rascunho", "sincronizada_em"
         FROM "resposta_aluno"
         WHERE "prova_aluno_id" = $1
         ORDER BY "criado_em" ASC
@@ -142,6 +202,13 @@ export class RespostaAlunoRepository {
     return result.rows.map(mapResposta);
   }
 
+  /**
+   * Identifica questões sem resposta (em branco) de um aluno.
+   *
+   * @param provaAlunoId - ID do vínculo prova-aluno.
+   * @param client - Conexão opcional (para uso dentro de transação).
+   * @returns Lista de IDs das questões em branco.
+   */
   async findQuestoesEmBranco(provaAlunoId: string, client: PoolClient | typeof pool = pool) {
     const result = await client.query<{ questao_id: string }>(
       `
@@ -161,7 +228,16 @@ export class RespostaAlunoRepository {
     return result.rows.map((row) => row.questao_id);
   }
 
-  async markAsSubmitted(provaAlunoId: string) {
+  /**
+   * Finaliza o envio da prova pelo aluno em transação.
+   *
+   * Marca respostas como enviada_final=true, rascunho=false
+   * e altera status da prova_aluno para 'enviada'.
+   *
+   * @param provaAlunoId - ID do vínculo prova-aluno a ser finalizado.
+   * @returns Resumo do envio com status, timestamp e questões em branco.
+   */
+  async markAsSubmitted(provaAlunoId: string): Promise<EnvioFinal> {
     return withTransaction(async (client) => {
       const questoesEmBranco = await this.findQuestoesEmBranco(provaAlunoId, client);
 

@@ -5,6 +5,7 @@ import { requireRole } from "../middlewares/auth.js";
 import { errorResponseSchema, successResponseSchema } from "../schemas/common.schema.js";
 import {
   createProfessorBodySchema,
+  professorMateriaResponseSchema,
   professorParamsSchema,
   professorResponseSchema,
   updateProfessorBodySchema,
@@ -78,6 +79,28 @@ export async function professorRoutes(app: FastifyInstance) {
       },
     },
     controller.buscarPorId,
+  );
+
+  app.withTypeProvider().get(
+    "/professores/:professorId/materias",
+    {
+      preHandler: requireRole("professor", "coordenador"),
+      schema: {
+        tags: ["Professores"],
+        summary: "Listar matérias vinculadas ao professor",
+        description:
+          "Lista as matérias vinculadas a um professor. Coordenadores usam para gestão de vínculos; professores usam para conferir suas matérias.",
+        params: professorParamsSchema,
+        response: {
+          200: successResponseSchema(z.array(professorMateriaResponseSchema)),
+          401: errorResponseSchema,
+          403: errorResponseSchema,
+          404: errorResponseSchema,
+          422: errorResponseSchema,
+        },
+      },
+    },
+    controller.listarMaterias,
   );
 
   app.withTypeProvider().put(

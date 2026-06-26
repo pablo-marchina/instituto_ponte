@@ -1,0 +1,390 @@
+
+> coverage
+> npm --prefix src/backend run test:coverage && npm --prefix src/view run test:coverage
+
+
+> servidor@1.0.0 test:coverage
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage
+
+--------------------------------|---------|----------|---------|---------|-------------------------------------------
+File                            | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+--------------------------------|---------|----------|---------|---------|-------------------------------------------
+All files                       |    88.9 |    75.46 |   90.19 |   89.87 |
+ src                            |   93.33 |    64.28 |   83.33 |   95.45 |
+  app.ts                        |   93.33 |    64.28 |   83.33 |   95.45 | 34,129
+ src/controllers                |   94.51 |    82.75 |   92.04 |   94.51 |
+  aluno-portal.controller.ts    |     100 |      100 |     100 |     100 |
+  aluno.controller.ts           |     100 |      100 |     100 |     100 |
+  analytics.controller.ts       |     100 |      100 |     100 |     100 |
+  anexo-exportar.controller.ts  |     100 |      100 |     100 |     100 |
+  auth.controller.ts            |     100 |      100 |     100 |     100 |
+  correcao.controller.ts        |     100 |      100 |     100 |     100 |
+  email-resultado.controller.ts |     100 |      100 |     100 |     100 |
+  health.controller.ts          |     100 |      100 |     100 |     100 |
+  materia.controller.ts         |     100 |       60 |     100 |     100 | 20
+  professor.controller.ts       |   92.85 |       60 |   88.88 |   92.85 | 28-29
+  prova-questao.controller.ts   |   85.71 |      100 |      80 |   85.71 | 27-28
+  prova.controller.ts           |   94.59 |      100 |   91.66 |   94.59 | 65-66
+  questao.controller.ts         |     100 |      100 |     100 |     100 |
+  resposta-aluno.controller.ts  |     100 |      100 |     100 |     100 |
+  resposta-anexo.controller.ts  |     100 |    66.66 |     100 |     100 | 11
+  resultado.controller.ts       |     100 |      100 |     100 |     100 |
+  tema.controller.ts            |     100 |      100 |     100 |     100 |
+  turma.controller.ts           |   41.66 |      100 |      20 |   41.66 | 10,13,16-17,21-23
+ src/database                   |   82.22 |    81.25 |      60 |   81.81 |
+  migrate-cpf.ts                |   72.41 |     87.5 |   33.33 |   71.42 | 36-37,46-54
+  ping.repository.ts            |     100 |      100 |     100 |     100 |
+  pool.ts                       |     100 |       75 |     100 |     100 | 7,17
+  transaction.ts                |     100 |      100 |     100 |     100 |
+ src/errors                     |     100 |      100 |     100 |     100 |
+  api-error.ts                  |     100 |      100 |     100 |     100 |
+ src/helpers                    |   95.38 |    85.04 |    92.3 |   97.39 |
+  date.ts                       |     100 |      100 |     100 |     100 |
+  http.ts                       |     100 |      100 |     100 |     100 |
+  multipart.ts                  |     100 |    94.73 |     100 |     100 | 30
+  resilience.ts                 |   93.25 |    79.72 |    87.5 |    96.1 | 74,124-125
+  stable-json.ts                |     100 |      100 |     100 |     100 |
+ src/middlewares                |   87.68 |     76.8 |     100 |   88.72 |
+  auth.ts                       |   88.54 |    78.94 |     100 |   88.54 | 31,66,103,136-143,147-154,172-179,183-190
+  idempotency.ts                |   85.71 |       70 |     100 |   89.18 | 34,43-44,52
+ src/repositories               |   78.03 |    60.27 |   83.24 |   79.44 |
+  aluno-portal.repository.ts    |   73.68 |       76 |   70.58 |   74.07 | 84-89,94-96,105,110,116,223,284-298
+  aluno.repository.ts           |   72.61 |    37.28 |   83.33 |   74.35 | 155-156,160,189-243
+  analytics.repository.ts       |     100 |       75 |     100 |     100 | 50
+  anexo-exportar.repository.ts  |     100 |      100 |     100 |     100 |
+  auth.repository.ts            |     100 |       80 |     100 |     100 | 38,52
+  avaliacao-log.repository.ts   |     100 |    91.66 |     100 |     100 | 52
+  correcao.repository.ts        |   96.87 |     37.5 |     100 |     100 | 97-184,351-498
+  email-envio.repository.ts     |      95 |    83.33 |      90 |   94.44 | 216
+  expiration.repository.ts      |   66.66 |       50 |      75 |   72.72 | 16-29
+  idempotency.repository.ts     |   72.72 |       75 |   66.66 |   72.72 | 40-45,67
+  materia.repository.ts         |   76.19 |    53.57 |    87.5 |    75.6 | 67-87,142-143,147
+  professor.repository.ts       |   83.33 |    57.69 |   86.66 |   84.61 | 144-145,148-149,153,179,241-252
+  prova-questao.repository.ts   |    55.1 |       64 |   83.33 |   55.55 | 264-307
+  prova.repository.ts           |   80.45 |       65 |      76 |   85.71 | 79-169,219-242,573-606
+  questao.repository.ts         |   91.78 |    71.76 |     100 |   93.84 | 380-381,403-404
+  resposta-aluno.repository.ts  |     100 |       75 |     100 |     100 | 49,151,212-262
+  resposta-anexo.repository.ts  |     100 |      100 |     100 |     100 |
+  resultado.repository.ts       |     100 |       70 |     100 |     100 | 33-44,94
+  tema.repository.ts            |   82.05 |    63.63 |     100 |   81.57 | 73-82,125-126,130
+  turma.repository.ts           |      10 |        0 |       0 |   11.11 | 27-114
+ src/routes                     |     100 |      100 |     100 |     100 |
+  aluno-portal.routes.ts        |     100 |      100 |     100 |     100 |
+  aluno.routes.ts               |     100 |      100 |     100 |     100 |
+  analytics.routes.ts           |     100 |      100 |     100 |     100 |
+  anexo-exportar.routes.ts      |     100 |      100 |     100 |     100 |
+  auth.routes.ts                |     100 |      100 |     100 |     100 |
+  coordenador.routes.ts         |     100 |      100 |     100 |     100 |
+  correcao.routes.ts            |     100 |      100 |     100 |     100 |
+  email.routes.ts               |     100 |      100 |     100 |     100 |
+  health.routes.ts              |     100 |      100 |     100 |     100 |
+  materia.routes.ts             |     100 |      100 |     100 |     100 |
+  professor.routes.ts           |     100 |      100 |     100 |     100 |
+  prova.routes.ts               |     100 |      100 |     100 |     100 |
+  questao.routes.ts             |     100 |      100 |     100 |     100 |
+  resposta-aluno.routes.ts      |     100 |      100 |     100 |     100 |
+  resposta-anexo.routes.ts      |     100 |      100 |     100 |     100 |
+  resultado.routes.ts           |     100 |      100 |     100 |     100 |
+  tema.routes.ts                |     100 |      100 |     100 |     100 |
+  turma.routes.ts               |     100 |      100 |     100 |     100 |
+ src/schemas                    |   99.03 |       60 |      90 |      99 |
+  aluno-portal.schema.ts        |     100 |      100 |     100 |     100 |
+  aluno.schema.ts               |     100 |      100 |     100 |     100 |
+  analytics.schema.ts           |     100 |      100 |     100 |     100 |
+  anexo-exportar.schema.ts      |     100 |      100 |     100 |     100 |
+  common.schema.ts              |     100 |      100 |     100 |     100 |
+  correcao.schema.ts            |     100 |      100 |     100 |     100 |
+  email.schema.ts               |     100 |      100 |     100 |     100 |
+  materia.schema.ts             |     100 |      100 |     100 |     100 |
+  professor.schema.ts           |     100 |      100 |     100 |     100 |
+  prova-questao.schema.ts       |     100 |      100 |     100 |     100 |
+  prova.schema.ts               |     100 |      100 |     100 |     100 |
+  questao.schema.ts             |    92.3 |        0 |   66.66 |   91.66 | 9
+  resposta-aluno.schema.ts      |     100 |      100 |     100 |     100 |
+  resposta-anexo.schema.ts      |     100 |      100 |     100 |     100 |
+  resultado.schema.ts           |     100 |      100 |     100 |     100 |
+  tema.schema.ts                |     100 |      100 |     100 |     100 |
+  turma.schema.ts               |     100 |      100 |     100 |     100 |
+ src/security                   |      98 |    96.55 |     100 |   97.87 |
+  cpf-crypto.ts                 |      98 |    96.55 |     100 |   97.87 | 24
+ src/services                   |   92.15 |    85.92 |    95.2 |    92.8 |
+  aluno-portal.service.ts       |   96.29 |    95.45 |     100 |     100 | 90
+  aluno.service.ts              |     100 |      100 |     100 |     100 |
+  analytics.service.ts          |     100 |      100 |     100 |     100 |
+  anexo-exportar.service.ts     |     100 |      100 |     100 |     100 |
+  auth.service.ts               |     100 |      100 |     100 |     100 |
+  avaliacao-log.service.ts      |     100 |      100 |     100 |     100 |
+  correcao.service.ts           |   96.66 |     93.1 |     100 |   96.66 | 107
+  email-adapter.ts              |   91.66 |     80.7 |    90.9 |   91.66 | 23,81,130,134,143
+  email-resultado.service.ts    |      96 |    78.72 |     100 |   95.94 | 23,206-207
+  expiration.service.ts         |     100 |    28.57 |     100 |     100 | 6,20-21
+  health.service.ts             |     100 |      100 |     100 |     100 |
+  materia.service.ts            |   96.29 |    94.73 |     100 |   96.29 | 46
+  professor.service.ts          |     100 |    97.29 |     100 |     100 | 90
+  prova-questao.service.ts      |      75 |    68.96 |   83.33 |      75 | 67,104-118
+  prova.service.ts              |    83.5 |     79.1 |   91.66 |    83.5 | 60,143-150,156,244-254,296
+  questao.service.ts            |   95.16 |    89.36 |     100 |   96.66 | 165,191
+  resposta-aluno.service.ts     |   97.67 |    94.73 |     100 |   97.67 | 102
+  resposta-anexo.service.ts     |    97.5 |    96.77 |     100 |   97.43 | 145
+  resultado.service.ts          |     100 |    88.46 |     100 |     100 | 13,35,165
+  storage.service.ts            |     100 |       90 |     100 |     100 | 34
+  tema.service.ts               |     100 |      100 |     100 |     100 |
+  turma.service.ts              |    5.26 |     7.69 |      20 |    7.14 | 9-30
+--------------------------------|---------|----------|---------|---------|-------------------------------------------
+
+Test Suites: 54 passed, 54 total
+Tests:       438 passed, 438 total
+Snapshots:   0 total
+Time:        99.258 s, estimated 154 s
+Ran all test suites.
+
+> frontend@0.0.0 test:coverage
+> vitest run --coverage
+
+
+[1m[46m RUN [49m[22m [36mv3.2.6 [39m[90mC:/Inteli/Projetos/g05/src/view[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+ [32m✓[39m src/App.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 715[2mms[22m[39m
+ [32m✓[39m front-coordenador-professor/src/app/app-routing.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1049[2mms[22m[39m
+   [33m[2m✓[22m[39m coordenador/professor app routing[2m > [22mrenderiza login e inicia OAuth guardando papel selecionado [33m 818[2mms[22m[39m
+ [32m✓[39m front-aluno/src/app/components/student-screens.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 4589[2mms[22m[39m
+   [33m[2m✓[22m[39m student flow screens[2m > [22mvalida campos de acesso, formata CPF e envia dados validos [33m 2125[2mms[22m[39m
+   [33m[2m✓[22m[39m student flow screens[2m > [22mresume questoes antes do envio e controla modal de confirmacao [33m 830[2mms[22m[39m
+   [33m[2m✓[22m[39m student flow screens[2m > [22mrenderiza prova objetiva/discursiva, upload, navegacao e aviso de tempo [33m 907[2mms[22m[39m
+   [33m[2m✓[22m[39m student flow screens[2m > [22mrenderiza revisao e permite ir para questao e envio [33m 395[2mms[22m[39m
+ [32m✓[39m front-coordenador-professor/src/app/components/professor/professor-smoke.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 3620[2mms[22m[39m
+   [33m[2m✓[22m[39m professor smoke components[2m > [22mrenderiza painel com estatisticas e navega para prova recente [33m 944[2mms[22m[39m
+   [33m[2m✓[22m[39m professor smoke components[2m > [22mfiltra, navega, exclui e arquiva provas [33m 1122[2mms[22m[39m
+   [33m[2m✓[22m[39m professor smoke components[2m > [22mrenderiza modal de origem e dispara opcoes [33m 379[2mms[22m[39m
+   [33m[2m✓[22m[39m professor smoke components[2m > [22mmostra galeria de anexos e fecha preview [33m 327[2mms[22m[39m
+ [32m✓[39m front-coordenador-professor/src/app/components/auth-screens.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 845[2mms[22m[39m
+   [33m[2m✓[22m[39m internal auth screens[2m > [22malterna perfil e inicia login Google [33m 614[2mms[22m[39m
+ [32m✓[39m src/components/shared-components.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 2842[2mms[22m[39m
+   [33m[2m✓[22m[39m shared components[2m > [22mconfirma e cancela dialogo de confirmacao [33m 861[2mms[22m[39m
+   [33m[2m✓[22m[39m shared components[2m > [22mrenderiza wrappers Radix basicos e troca estados por interacao [33m 1689[2mms[22m[39m
+ [32m✓[39m front-coordenador-professor/src/app/components/coordenador/coordenador-gestao.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 3299[2mms[22m[39m
+   [33m[2m✓[22m[39m coordenador gestao pages[2m > [22mcarrega gestao de alunos, navega para perfil e confirma remocao [33m 1353[2mms[22m[39m
+   [33m[2m✓[22m[39m coordenador gestao pages[2m > [22mcria professor e mostra erro compreensivel quando exclusao retorna conflito [33m 1937[2mms[22m[39m
+ [32m✓[39m front-coordenador-professor/src/app/components/professor/professor-pages.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 2486[2mms[22m[39m
+   [33m[2m✓[22m[39m professor large pages[2m > [22mfiltra banco de questoes e dispara edicao, exclusao e selecao de prova [33m 1010[2mms[22m[39m
+   [33m[2m✓[22m[39m professor large pages[2m > [22mpreenche e salva nova prova com payload normalizado [33m 424[2mms[22m[39m
+   [33m[2m✓[22m[39m professor large pages[2m > [22mcria questao, cria tema novo e alterna preview [33m 892[2mms[22m[39m
+ [32m✓[39m front-coordenador-professor/src/app/components/professor/professor-correction-release.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 3072[2mms[22m[39m
+   [33m[2m✓[22m[39m professor correction and release pages[2m > [22mlibera notas, exporta resultados, zip de anexos e reenvia e-mail [33m 1769[2mms[22m[39m
+   [33m[2m✓[22m[39m professor correction and release pages[2m > [22mlista questoes para correcao e navega para uma questao [33m 455[2mms[22m[39m
+   [33m[2m✓[22m[39m professor correction and release pages[2m > [22mcorrige respostas por questao e aciona conclusao [33m 456[2mms[22m[39m
+   [33m[2m✓[22m[39m professor correction and release pages[2m > [22mcorrige por aluno, filtra estudantes e salva payloads [33m 388[2mms[22m[39m
+ [32m✓[39m front-coordenador-professor/src/app/components/professor/prova-detail-modal.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 2847[2mms[22m[39m
+   [33m[2m✓[22m[39m prova detail and bank modal[2m > [22minterage com detalhe da prova, abas, questoes e configuracoes [33m 2518[2mms[22m[39m
+   [33m[2m✓[22m[39m prova detail and bank modal[2m > [22mfiltra e adiciona questoes do banco [33m 325[2mms[22m[39m
+ [32m✓[39m front-aluno/src/app/App.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 9856[2mms[22m[39m
+   [33m[2m✓[22m[39m front aluno App[2m > [22minicia prova, responde, revisa pre-entrega e envia [33m 4661[2mms[22m[39m
+   [33m[2m✓[22m[39m front aluno App[2m > [22mmarca questao, abre revisao e volta para a prova [33m 2410[2mms[22m[39m
+   [33m[2m✓[22m[39m front aluno App[2m > [22msalva discursiva antes de abrir seletor e envia anexo selecionado [33m 2474[2mms[22m[39m
+ [32m✓[39m src/features/api-contracts.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 797[2mms[22m[39m
+   [33m[2m✓[22m[39m feature API contracts[2m > [22mexecuta mutacoes administrativas com metodo e payload corretos [33m 364[2mms[22m[39m
+ [32m✓[39m front-coordenador-professor/src/app/components/coordenador/coordenador-profile-dashboard.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 5342[2mms[22m[39m
+   [33m[2m✓[22m[39m coordenador/professor dashboards and profiles[2m > [22mrenderiza dashboard do professor, navega por abas e faz logout [33m 1491[2mms[22m[39m
+   [33m[2m✓[22m[39m coordenador/professor dashboards and profiles[2m > [22mrenderiza rotas internas do professor a partir da aba inicial [33m 1214[2mms[22m[39m
+   [33m[2m✓[22m[39m coordenador/professor dashboards and profiles[2m > [22mrenderiza dashboard do coordenador e acessa gestoes [33m 491[2mms[22m[39m
+   [33m[2m✓[22m[39m coordenador/professor dashboards and profiles[2m > [22mrenderiza rotas internas do coordenador a partir da aba inicial [33m 1144[2mms[22m[39m
+   [33m[2m✓[22m[39m coordenador/professor dashboards and profiles[2m > [22mcarrega perfil do aluno e salva edicao [33m 412[2mms[22m[39m
+   [33m[2m✓[22m[39m coordenador/professor dashboards and profiles[2m > [22mcarrega perfil do professor, vincula materia e salva edicao [33m 585[2mms[22m[39m
+ [32m✓[39m front-aluno/src/app/components/Header.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 655[2mms[22m[39m
+   [33m[2m✓[22m[39m Header[2m > [22moculta e reexibe o cronometro [33m 649[2mms[22m[39m
+ [32m✓[39m src/lib/apiClient.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 325[2mms[22m[39m
+ [32m✓[39m src/features/auth/auth-runtime.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 202[2mms[22m[39m
+ [32m✓[39m front-coordenador-professor/src/app/components/professor/questao-edit-modals.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1382[2mms[22m[39m
+   [33m[2m✓[22m[39m questao edit modals[2m > [22medita alternativa do banco, marca correta, salva e fecha [33m 794[2mms[22m[39m
+ [32m✓[39m src/features/dashboard/dashboard-hooks.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 708[2mms[22m[39m
+ [32m✓[39m front-aluno/src/app/components/ZoomableImage.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 444[2mms[22m[39m
+   [33m[2m✓[22m[39m ZoomableImage[2m > [22mabre, recebe foco e fecha pelo Escape [33m 390[2mms[22m[39m
+ [32m✓[39m src/lib/supabaseClient.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32m✓[39m front-aluno/src/app/components/figma/ImageWithFallback.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 157[2mms[22m[39m
+ [32m✓[39m src/features/correcao/useCorrecaoAutomaticaObjetivas.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 240[2mms[22m[39m
+ [32m✓[39m src/components/ui/basic-ui.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1247[2mms[22m[39m
+   [33m[2m✓[22m[39m basic ui components[2m > [22mrenderiza button, badge, alert e card com slots esperados [33m 469[2mms[22m[39m
+   [33m[2m✓[22m[39m basic ui components[2m > [22mrenderiza controles de formulario basicos [33m 699[2mms[22m[39m
+ [32m✓[39m src/features/mappers.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m src/features/runtime-helpers.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 85[2mms[22m[39m
+ [32m✓[39m src/components/ui/extended-ui.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 3280[2mms[22m[39m
+   [33m[2m✓[22m[39m extended ui wrappers[2m > [22mrenderiza wrappers de formulario, calendario, paginacao e controles [33m 1095[2mms[22m[39m
+   [33m[2m✓[22m[39m extended ui wrappers[2m > [22mrenderiza menus, sheets, drawer, hover card, select e command [33m 1186[2mms[22m[39m
+   [33m[2m✓[22m[39m extended ui wrappers[2m > [22mrenderiza carousel, chart, resizable, scroll area, sidebar e toaster [33m 744[2mms[22m[39m
+ [32m✓[39m front-aluno/src/app/hooks/useServerTimer.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m front-aluno/src/app/hooks/useAutosaveQueue.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m src/features/auth/auth.storage.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/modules/modules.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32m✓[39m src/components/ui/direct-ui-coverage.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m31 passed[39m[22m[90m (31)[39m
+[2m      Tests [22m [1m[32m122 passed[39m[22m[90m (122)[39m
+[2m   Start at [22m 06:51:46
+[2m   Duration [22m 37.97s[2m (transform 22.74s, setup 27.66s, collect 113.13s, tests 50.36s, environment 154.26s, prepare 30.32s)[22m
+
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   90.85 |    77.24 |   72.52 |   90.85 |
+ ...-aluno/src/app |   92.44 |    78.35 |    73.8 |   92.44 |
+  App.tsx          |   92.44 |    78.35 |    73.8 |   92.44 | ...03-404,415-422
+ ...app/components |   96.03 |    86.86 |   84.84 |   96.03 |
+  Header.tsx       |     100 |      100 |     100 |     100 |
+  TelaAcesso.tsx   |   99.18 |    96.66 |     100 |   99.18 | 50
+  ...nfirmacao.tsx |     100 |      100 |     100 |     100 |
+  ...Instrucao.tsx |   98.68 |    72.72 |     100 |   98.68 | 38
+  ...reEntrega.tsx |   97.81 |    90.47 |     100 |   97.81 | 106-109
+  TelaProva.tsx    |   92.37 |     77.5 |      75 |   92.37 | ...31,236,242-247
+  TelaRevisao.tsx  |    92.3 |       70 |   66.66 |    92.3 | 37-40,60-62,89
+  ...ableImage.tsx |   96.22 |      100 |      60 |   96.22 | 44-45
+ ...mponents/figma |     100 |       80 |     100 |     100 |
+  ...hFallback.tsx |     100 |       80 |     100 |     100 | 17
+ .../src/app/hooks |     100 |      100 |     100 |     100 |
+  ...osaveQueue.ts |     100 |      100 |     100 |     100 |
+  ...erverTimer.ts |     100 |      100 |     100 |     100 |
+ ...fessor/src/app |   95.83 |    76.47 |   63.63 |   95.83 |
+  App.tsx          |   95.83 |    76.47 |   63.63 |   95.83 | ...45,165,169-170
+ ...app/components |     100 |      100 |     100 |     100 |
+  ...troScreen.tsx |     100 |      100 |     100 |     100 |
+  LoginScreen.tsx  |     100 |      100 |     100 |     100 |
+ ...ts/coordenador |   88.96 |    71.31 |   57.27 |   88.96 |
+  ...Dashboard.tsx |   85.19 |    53.44 |   19.23 |   85.19 | ...08-314,317-324
+  ...lunoModal.tsx |   99.34 |       64 |   57.14 |   99.34 | 149
+  ...ssorModal.tsx |     100 |    72.72 |      80 |     100 | 15-16,119
+  ...lunosPage.tsx |   72.12 |    67.34 |    40.9 |   72.12 | ...72-382,389-451
+  ...soresPage.tsx |   90.55 |    74.28 |   76.47 |   90.55 | ...64-268,299-306
+  ...ssorModal.tsx |     100 |    91.66 |     100 |     100 | 117
+  ...AlunoPage.tsx |     100 |    78.26 |     100 |     100 | 67-68,169
+  ...essorPage.tsx |   96.44 |    94.73 |      75 |   96.44 | 74-75,81-85,87-88
+ ...ents/professor |   86.81 |    72.14 |   48.72 |   86.81 |
+  ...osGallery.tsx |     100 |    58.82 |     100 |     100 | ...37-42,55,83,90
+  ...stoesPage.tsx |   91.63 |    77.41 |   76.92 |   91.63 | ...66,269-282,286
+  ...lharModal.tsx |     100 |     90.9 |     100 |     100 | 45
+  ...AlunoPage.tsx |   92.82 |    82.17 |   58.33 |   92.82 | ...58-360,388-397
+  ...letaModal.tsx |     100 |      100 |     100 |     100 |
+  CorrecaoPage.tsx |    98.1 |    97.91 |   85.71 |    98.1 | 67-69
+  ...ionAssets.tsx |   44.44 |       25 |      50 |   44.44 | 35-40,47-68
+  ...staoModal.tsx |   84.52 |    91.07 |   41.66 |   84.52 | ...24-148,343-345
+  ...rovaModal.tsx |   71.88 |    87.23 |   42.85 |   71.88 | ...46-276,297-299
+  ...NotasPage.tsx |    82.8 |    74.45 |      70 |    82.8 | ...31-742,904-934
+  ...ProvaPage.tsx |   91.46 |    61.42 |   28.12 |   91.46 | ...83-285,291-313
+  ...estaoPage.tsx |   74.95 |    74.32 |   31.11 |   74.95 | ...76,689,695-697
+  PainelPage.tsx   |    92.7 |    78.57 |     100 |    92.7 | 44,84-91
+  ...Dashboard.tsx |   88.71 |    40.29 |      20 |   88.71 | ...00-301,303-305
+  ...etailPage.tsx |   81.66 |    50.64 |   33.33 |   81.66 | ...,946,1022-1024
+  ...recaoPage.tsx |   92.51 |    72.22 |   57.14 |   92.51 | ...00-102,143,151
+  ProvasPage.tsx   |   96.65 |    63.29 |      60 |   96.65 | 20-23,253-260
+  ...recaoPage.tsx |   88.15 |    75.72 |      60 |   88.15 | ...09-318,369-371
+  ...ancoModal.tsx |   97.34 |    86.88 |   81.81 |   97.34 | ...67,357,368-372
+  ...staoModal.tsx |     100 |      100 |     100 |     100 |
+  ...rovaModal.tsx |   91.15 |    82.35 |     100 |   91.15 | 27,79-84,87-91
+  ...ification.tsx |     100 |      100 |     100 |     100 |
+  ...gesWarning.ts |   66.66 |      100 |   33.33 |   66.66 | 8-10,18-19
+ src               |   93.07 |    92.59 |   88.88 |   93.07 |
+  App.tsx          |   93.07 |    92.59 |   88.88 |   93.07 | 53-54,58-65
+ ...nents/feedback |     100 |      100 |     100 |     100 |
+  ...irmDialog.tsx |     100 |      100 |     100 |     100 |
+ ...omponents/math |   82.91 |     87.5 |     100 |   82.91 |
+  MathText.tsx     |   82.91 |     87.5 |     100 |   82.91 | ...41-143,147-149
+ src/components/ui |   96.64 |    79.61 |   98.34 |   96.64 |
+  accordion.tsx    |     100 |      100 |     100 |     100 |
+  alert-dialog.tsx |     100 |      100 |     100 |     100 |
+  alert.tsx        |     100 |      100 |     100 |     100 |
+  aspect-ratio.tsx |     100 |      100 |     100 |     100 |
+  avatar.tsx       |     100 |      100 |     100 |     100 |
+  badge.tsx        |     100 |       50 |     100 |     100 | 35
+  breadcrumb.tsx   |     100 |      100 |     100 |     100 |
+  button.tsx       |     100 |       50 |     100 |     100 | 47
+  calendar.tsx     |   98.48 |       75 |     100 |   98.48 | 40
+  card.tsx         |     100 |      100 |     100 |     100 |
+  carousel.tsx     |      92 |       50 |     100 |      92 | ...,80-87,190,220
+  chart.tsx        |   87.93 |    38.88 |     100 |   87.93 | ...31,336-339,343
+  checkbox.tsx     |     100 |      100 |     100 |     100 |
+  collapsible.tsx  |     100 |      100 |     100 |     100 |
+  command.tsx      |   85.18 |      100 |   88.88 |   85.18 | 32-54
+  context-menu.tsx |     100 |      100 |     100 |     100 |
+  dialog.tsx       |     100 |      100 |     100 |     100 |
+  drawer.tsx       |     100 |      100 |     100 |     100 |
+  ...down-menu.tsx |     100 |      100 |     100 |     100 |
+  form.tsx         |   95.28 |    63.63 |     100 |   95.28 | 53-54,118,144-145
+  hover-card.tsx   |     100 |      100 |     100 |     100 |
+  input-otp.tsx    |   94.91 |    66.66 |     100 |   94.91 | 61-63
+  input.tsx        |     100 |      100 |     100 |     100 |
+  label.tsx        |     100 |      100 |     100 |     100 |
+  menubar.tsx      |     100 |      100 |     100 |     100 |
+  ...tion-menu.tsx |     100 |      100 |     100 |     100 |
+  pagination.tsx   |     100 |      100 |     100 |     100 |
+  popover.tsx      |     100 |      100 |     100 |     100 |
+  progress.tsx     |     100 |       50 |     100 |     100 | 25
+  radio-group.tsx  |     100 |      100 |     100 |     100 |
+  resizable.tsx    |     100 |      100 |     100 |     100 |
+  scroll-area.tsx  |     100 |      100 |     100 |     100 |
+  select.tsx       |     100 |      100 |     100 |     100 |
+  separator.tsx    |     100 |      100 |     100 |     100 |
+  sheet.tsx        |   97.16 |    76.92 |     100 |   97.16 | 65,67,69
+  sidebar.tsx      |   91.07 |    69.23 |    92.3 |   91.07 | ...72-274,527-528
+  skeleton.tsx     |     100 |      100 |     100 |     100 |
+  slider.tsx       |   96.22 |       60 |     100 |   96.22 | 19,22
+  sonner.tsx       |     100 |      100 |     100 |     100 |
+  switch.tsx       |     100 |      100 |     100 |     100 |
+  table.tsx        |     100 |      100 |     100 |     100 |
+  tabs.tsx         |     100 |      100 |     100 |     100 |
+  textarea.tsx     |     100 |      100 |     100 |     100 |
+  toggle-group.tsx |     100 |      100 |     100 |     100 |
+  toggle.tsx       |     100 |      100 |     100 |     100 |
+  tooltip.tsx      |     100 |      100 |     100 |     100 |
+  use-mobile.ts    |   88.23 |      100 |      50 |   88.23 | 13-14
+  utils.ts         |     100 |      100 |     100 |     100 |
+ ...features/aluno |     100 |    96.77 |     100 |     100 |
+  aluno.api.ts     |     100 |    96.77 |     100 |     100 | 129
+ ...eatures/alunos |     100 |      100 |     100 |     100 |
+  alunos.api.ts    |     100 |      100 |     100 |     100 |
+ ...ures/analytics |     100 |    92.85 |      75 |     100 |
+  analytics.api.ts |     100 |      100 |     100 |     100 |
+  ...icsSummary.ts |     100 |     92.3 |   66.66 |     100 | 58
+ ...eatures/anexos |   96.82 |    63.15 |     100 |   96.82 |
+  anexos.api.ts    |     100 |      100 |     100 |     100 |
+  anexos.zip.ts    |   96.36 |    61.11 |     100 |   96.36 | 19-20
+ src/features/auth |     100 |    89.74 |     100 |     100 |
+  auth.api.ts      |     100 |    94.11 |     100 |     100 | 64
+  auth.events.ts   |     100 |       60 |     100 |     100 | 4,10
+  auth.request.ts  |     100 |      100 |     100 |     100 |
+  auth.storage.ts  |     100 |     92.3 |     100 |     100 | 6
+ ...tures/correcao |     100 |      100 |     100 |     100 |
+  correcao.api.ts  |     100 |      100 |     100 |     100 |
+  ...aObjetivas.ts |     100 |      100 |     100 |     100 |
+ ...ures/dashboard |   81.68 |    85.08 |   79.16 |   81.68 |
+  ...rd.mappers.ts |     100 |      100 |     100 |     100 |
+  ...ui-adapter.ts |     100 |      100 |     100 |     100 |
+  ...coQuestoes.ts |     100 |    88.88 |     100 |     100 | 14,37
+  useDashboard.ts  |     100 |      100 |     100 |     100 |
+  ...vaQuestoes.ts |   60.09 |       72 |   58.33 |   60.09 | ...32-233,237-257
+  ...elecionada.ts |     100 |      100 |     100 |     100 |
+  useProvas.ts     |   87.87 |    85.45 |   81.48 |   87.87 | ...59-261,267-269
+ ...eatures/emails |     100 |      100 |     100 |     100 |
+  emails.api.ts    |     100 |      100 |     100 |     100 |
+ ...tures/materias |     100 |      100 |     100 |     100 |
+  materias.api.ts  |     100 |      100 |     100 |     100 |
+ ...es/professores |     100 |      100 |     100 |     100 |
+  ...ssores.api.ts |     100 |      100 |     100 |     100 |
+ ...eatures/provas |   86.28 |    79.48 |   82.35 |   86.28 |
+  provas.api.ts    |   78.78 |     90.9 |   76.92 |   78.78 | ...,75-79,115-124
+  ...as.mappers.ts |   96.05 |       75 |     100 |   96.05 | 79,86-87
+ ...tures/questoes |   98.69 |    77.77 |     100 |   98.69 |
+  questoes.api.ts  |     100 |    83.33 |     100 |     100 | 11
+  ...es.mappers.ts |   98.24 |    76.66 |     100 |   98.24 | 52-53
+ ...res/resultados |     100 |      100 |     100 |     100 |
+  ...ltados.api.ts |     100 |      100 |     100 |     100 |
+ ...features/temas |     100 |      100 |     100 |     100 |
+  temas.api.ts     |     100 |      100 |     100 |     100 |
+ ...eatures/turmas |      32 |      100 |      25 |      32 |
+  turmas.api.ts    |      32 |      100 |      25 |      32 | 10-15,18-23,26-30
+ src/lib           |    97.1 |    84.72 |    87.5 |    97.1 |
+  apiClient.ts     |   96.77 |    83.82 |   86.95 |   96.77 | 88-89,142-143,151
+  ...baseClient.ts |     100 |      100 |     100 |     100 |
+ src/modules       |     100 |      100 |     100 |     100 |
+  AlunoModule.tsx  |     100 |      100 |     100 |     100 |
+  ...sorModule.tsx |     100 |      100 |     100 |     100 |
+-------------------|---------|----------|---------|---------|-------------------

@@ -1,7 +1,9 @@
 import { pool } from "../database/pool.js";
 import { withTransaction } from "../database/transaction.js";
 import type { AuthUser } from "../middlewares/auth.js";
+import type { ResultadoAluno, ExportacaoResultado } from "../models/resultado.model.js";
 
+/** Linha agregada de resultado com dados do aluno, notas e pendências. */
 type ResultadoRow = {
   prova_aluno_id: string;
   aluno_id: string;
@@ -14,13 +16,18 @@ type ResultadoRow = {
   liberado: boolean | null;
 };
 
+/** Linha bruta da tabela `exportacao_resultado`. Campos em snake_case. */
 type ExportacaoResultadoRow = {
   id: string;
   url_arquivo: string;
   formato: "xlsx" | "csv";
 };
 
-const mapResultado = (row: ResultadoRow) => {
+/** Converte uma ResultadoRow (snake_case) para o modelo ResultadoAluno (camelCase).
+ *  Calcula percentual como (nota_total / pontuacao_total) * 100 com proteção contra divisão por zero.
+ *  Valores numéricos são convertidos de string (NUMERIC) para Number.
+ *  liberado usa fallback para false quando null. */
+const mapResultado = (row: ResultadoRow): ResultadoAluno => {
   const notaTotal = Number(row.nota_total);
   const pontuacaoTotal = Number(row.pontuacao_total);
   const percentual = pontuacaoTotal > 0 ? Number(((notaTotal / pontuacaoTotal) * 100).toFixed(2)) : 0;
@@ -44,7 +51,25 @@ const mapResultado = (row: ResultadoRow) => {
   };
 };
 
+/**
+ * Repositório de resultados consolidados por prova e exportação.
+ *
+ * findByProva usa três CTEs encadeadas em transação para calcular
+ * notas agregadas por aluno e fazer upsert em resultado_aluno.
+ */
 export class ResultadoRepository {
+  async findProvaExists(provaId: string) {
+    const result = await pool.query('SELECT 1 FROM "prova" WHERE "id" = $1', [provaId]);
+    return result.rows.length > 0;
+  }
+
+  /**
+   * Verifica se o usuário tem acesso aos resultados da prova.
+   *
+   * @param provaId - ID da prova.
+   * @param user - Usuário autenticado.
+   * @returns true se tiver acesso.
+   */
   async hasAccessToProva(provaId: string, user: AuthUser) {
     if (user.perfil === "coordenador") return true;
 
@@ -69,6 +94,14 @@ export class ResultadoRepository {
     return result.rows[0]?.exists ?? false;
   }
 
+  /**
+   * Calcula e retorna os resultados consolidados de uma prova.
+   * Usa CTEs encadeadas para agregar notas por aluno e fazer upsert
+   * na tabela resultado_aluno com cálculo de percentual.
+   *
+   * @param provaId - ID da prova.
+   * @returns Lista de resultados por aluno.
+   */
   async findByProva(provaId: string) {
     return withTransaction(async (client) => {
       const result = await client.query<ResultadoRow>(
@@ -152,9 +185,19 @@ export class ResultadoRepository {
     });
   }
 
+  /**
+   * Registra uma exportação de resultados (XLSX ou CSV) no banco.
+   *
+   * @param provaId - ID da prova exportada.
+   * @param coordenadorId - ID do coordenador que solicitou, quando aplicavel.
+   * @param formato - Formato do arquivo: "xlsx" ou "csv".
+   * @param urlArquivo - URL do arquivo gerado.
+   * @param pendenciasCorrecao - Número de pendências no momento da exportação.
+   * @returns Dados da exportação registrada.
+   */
   async createExportacao(
     provaId: string,
-    coordenadorId: string,
+    coordenadorId: string | null,
     formato: "xlsx" | "csv",
     urlArquivo: string,
     pendenciasCorrecao: number,

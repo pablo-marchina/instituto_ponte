@@ -1,5 +1,7 @@
 import { pool } from "../database/pool.js";
+import type { Tema } from "../models/tema.model.js";
 
+/** Linha bruta da tabela `tema`. Campos em snake_case mapeados do PostgreSQL. */
 type TemaRow = {
   id: string;
   materia_id: string;
@@ -9,7 +11,9 @@ type TemaRow = {
   atualizado_em: Date;
 };
 
-const mapTema = (row: TemaRow) => ({
+/** Converte uma TemaRow (snake_case) para o modelo Tema (camelCase).
+ *  Datas são convertidas com toISOString(). */
+const mapTema = (row: TemaRow): Tema => ({
   id: row.id,
   materiaId: row.materia_id,
   nome: row.nome,
@@ -18,7 +22,19 @@ const mapTema = (row: TemaRow) => ({
   atualizadoEm: row.atualizado_em.toISOString(),
 });
 
+/**
+ * Repositório de temas (assuntos) vinculados a uma matéria.
+ *
+ * A unicidade é definida pela composição (nome + materia_id).
+ * materiaExists previne criação de temas com matéria inexistente.
+ */
 export class TemaRepository {
+  /**
+   * Verifica se uma matéria existe pelo ID.
+   *
+   * @param materiaId - ID da matéria.
+   * @returns true se a matéria existir.
+   */
   async materiaExists(materiaId: string) {
     const result = await pool.query(
       'SELECT EXISTS (SELECT 1 FROM "materia" WHERE "id" = $1) AS "exists"',
@@ -27,6 +43,12 @@ export class TemaRepository {
     return result.rows[0].exists as boolean;
   }
 
+  /**
+   * Cria um novo tema vinculado a uma matéria.
+   *
+   * @param input - Dados do tema: materiaId, nome e descricao opcional.
+   * @returns O tema recém-criado.
+   */
   async create(input: { materiaId: string; nome: string; descricao?: string | null }) {
     const result = await pool.query<TemaRow>(
       `INSERT INTO "tema" ("materia_id", "nome", "descricao")
@@ -36,6 +58,12 @@ export class TemaRepository {
     return mapTema(result.rows[0]);
   }
 
+  /**
+   * Lista temas com paginação e filtro opcional por matéria.
+   *
+   * @param options - Opções: materiaId para filtrar, page e limit para paginação.
+   * @returns Lista paginada de temas com total de registros.
+   */
   async findAll(options?: { materiaId?: string; page?: number; limit?: number }) {
     const page = options?.page ?? 1;
     const limit = options?.limit ?? 20;
@@ -63,6 +91,12 @@ export class TemaRepository {
     return { data: result.rows.map(mapTema), total };
   }
 
+  /**
+   * Busca tema por ID.
+   *
+   * @param id - ID do tema.
+   * @returns Tema encontrado ou null.
+   */
   async findById(id: string) {
     const result = await pool.query<TemaRow>(
       'SELECT * FROM "tema" WHERE "id" = $1',
@@ -71,6 +105,13 @@ export class TemaRepository {
     return result.rows[0] ? mapTema(result.rows[0]) : null;
   }
 
+  /**
+   * Atualiza um tema, alterando apenas os campos fornecidos.
+   *
+   * @param id - ID do tema a ser atualizado.
+   * @param input - Campos opcionais: nome e descricao.
+   * @returns Tema atualizado ou null se não encontrado.
+   */
   async update(id: string, input: { nome?: string; descricao?: string | null }) {
     const fields: string[] = [];
     const values: unknown[] = [];
@@ -99,11 +140,25 @@ export class TemaRepository {
     return result.rows[0] ? mapTema(result.rows[0]) : null;
   }
 
+  /**
+   * Remove um tema pelo ID.
+   *
+   * @param id - ID do tema a ser removido.
+   * @returns true se removido, false se não encontrado.
+   */
   async delete(id: string) {
     const result = await pool.query('DELETE FROM "tema" WHERE "id" = $1', [id]);
     return (result.rowCount ?? 0) > 0;
   }
 
+  /**
+   * Verifica unicidade composta (nome + materia_id).
+   *
+   * @param nome - Nome do tema (case-insensitive).
+   * @param materiaId - ID da matéria do tema.
+   * @param excludeId - ID opcional para excluir da verificação (não utilizado atualmente).
+   * @returns Tema duplicado encontrado ou null se único.
+   */
   async findByNameAndMateria(nome: string, materiaId: string, excludeId?: string) {
     const result = await pool.query<TemaRow>(
       `SELECT * FROM "tema" WHERE LOWER("nome") = LOWER($1) AND "materia_id" = $2`,

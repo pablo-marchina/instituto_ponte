@@ -7,9 +7,9 @@ export class AlunoController {
   constructor(private readonly service = new AlunoService()) {}
 
   listar = async (request: FastifyRequest, reply: FastifyReply) => {
-    const query = request.query as { page?: number; limit?: number };
+    const query = request.query as { page: number; limit: number };
     const result = await this.service.listar(query, getAuthenticatedUser(request));
-    return sendSuccess(reply, result.data, { page: query.page ?? 1, limit: query.limit ?? 20, total: result.total });
+    return sendSuccess(reply, result.data, { page: query.page, limit: query.limit, total: result.total });
   };
 
   buscarPorId = async (request: FastifyRequest, reply: FastifyReply) => {

@@ -8,10 +8,19 @@ export const emailEnvioIdParamsSchema = z.object({
   emailEnvioId: z.string().uuid("O emailEnvioId deve ser um UUID válido.").describe("Identificador único do registro de envio de e-mail."),
 });
 
+/**
+ * Corpo para liberar o envio de e-mails com os resultados da prova aos alunos.
+ * confirmarPendencias=true ignora correções pendentes e envia mesmo assim.
+ */
 export const liberarEmailBodySchema = z.object({
   confirmarPendencias: z.boolean().optional().default(false).describe("Confirma o envio mesmo com pendências de correção (true para prosseguir)."),
 }).strict();
 
+/**
+ * Resumo da operação de liberação de e-mails de resultados.
+ * pendentes representa alunos cujo resultado não foi enviado
+ * por ainda terem correções pendentes.
+ */
 export const emailLiberadoSchema = z.object({
   enviados: z.number().int().nonnegative().describe("Quantidade de e-mails enviados com sucesso."),
   falhas: z.number().int().nonnegative().describe("Quantidade de e-mails com falha no envio."),

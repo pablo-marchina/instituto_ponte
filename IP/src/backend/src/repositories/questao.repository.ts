@@ -2,14 +2,17 @@ import type { PoolClient } from "pg";
 import { pool } from "../database/pool.js";
 import { withTransaction } from "../database/transaction.js";
 import { toIsoString } from "../helpers/date.js";
-import type { AuthUser } from "../middlewares/auth.js";
+import type { AuthUser } from "../models/auth.model.js";
+import type { Questao, QuestaoTipo } from "../models/questao.model.js";
 import type { CreateQuestaoInput, ListQuestoesQuery, UpdateQuestaoInput } from "../schemas/questao.schema.js";
 
+/** Linha bruta da tabela `questao` com JOINs para `enunciado` e `alternativa`. */
 type QuestaoRow = {
   id: string;
   materia_id: string;
   tema_id: string | null;
   tipo: string;
+  dificuldade: string | null;
   limite_caracteres: number | null;
   limite_palavras: number | null;
   permite_anexo: boolean;
@@ -26,14 +29,21 @@ type QuestaoRow = {
     urlImagem: string | null;
     correta: boolean;
   }> | null;
+  times_used?: string | number | null;
+  success_rate?: string | number | null;
   total?: string;
 };
 
-const mapQuestao = (row: QuestaoRow) => ({
+/** Converte uma QuestaoRow (snake_case) para o modelo Questao (camelCase).
+ *  - pontuacao_padrao é convertida de string (NUMERIC) para Number.
+ *  - enunciado.conteudoLatex usa fallback para string vazia.
+ *  - alternativas é sempre um array (nunca null). */
+const mapQuestao = (row: QuestaoRow): Questao => ({
   id: row.id,
   materiaId: row.materia_id,
   temaId: row.tema_id,
-  tipo: row.tipo,
+  tipo: row.tipo as QuestaoTipo,
+  dificuldade: row.dificuldade ?? "Media",
   limiteCaracteres: row.limite_caracteres,
   limitePalavras: row.limite_palavras,
   permiteAnexo: row.permite_anexo,
@@ -46,8 +56,13 @@ const mapQuestao = (row: QuestaoRow) => ({
     urlImagem: row.enunciado_url_imagem,
   },
   alternativas: row.alternativas ?? [],
+  timesUsed: Number(row.times_used ?? 0),
+  successRate: Math.round(Number(row.success_rate ?? 0)),
 });
 
+/** Fragmento SQL reutilizável que agrega alternativas via json_agg com FILTER.
+ *  COALESCE com '[]'::json garante array vazio para questões sem alternativas.
+ *  LEFT JOIN permite retornar questões discursivas sem alternativas. */
 const selectQuestaoSql = `
   SELECT
     q.*,
@@ -66,11 +81,34 @@ const selectQuestaoSql = `
       ) FILTER (WHERE a."id" IS NOT NULL),
       '[]'::json
     ) AS "alternativas"
+    ,
+    (
+      SELECT COUNT(DISTINCT pqm."prova_id")
+      FROM "prova_questao" pqm
+      WHERE pqm."questao_id" = q."id"
+    ) AS "times_used",
+    COALESCE(
+      (
+        SELECT ROUND(
+          (
+            COUNT(ram."id") FILTER (WHERE altm."correta" = TRUE)::numeric
+            / NULLIF(COUNT(ram."id") FILTER (WHERE ram."alternativa_id" IS NOT NULL), 0)
+          ) * 100,
+          0
+        )
+        FROM "resposta_aluno" ram
+        LEFT JOIN "alternativa" altm ON altm."id" = ram."alternativa_id"
+        WHERE ram."questao_id" = q."id"
+      ),
+      0
+    ) AS "success_rate"
   FROM "questao" q
   JOIN "enunciado" e ON e."questao_id" = q."id"
   LEFT JOIN "alternativa" a ON a."questao_id" = q."id"
 `;
 
+/** Insere as alternativas de uma questão dentro de uma transação.
+ *  Percorre o array e executa INSERT individual para cada alternativa. */
 const insertAlternativas = async (
   client: PoolClient,
   questaoId: string,
@@ -95,15 +133,45 @@ const insertAlternativas = async (
   }
 };
 
+let questaoSchemaEnsured = false;
+
+/**
+ * Repositório do banco de questões com suporte a transação.
+ *
+ * A criação/atualização é atômica: opera em questao, enunciado e
+ * alternativa na mesma transação. A exclusão lógica (desativação)
+ * ocorre quando a questão já está vinculada a uma prova.
+ */
 export class QuestaoRepository {
+  private async ensureSchema() {
+    if (questaoSchemaEnsured) return;
+    await pool.query('ALTER TABLE "questao" ADD COLUMN IF NOT EXISTS "dificuldade" TEXT NULL');
+    questaoSchemaEnsured = true;
+  }
+
+  /**
+   * Verifica se uma matéria existe pelo ID.
+   *
+   * @param materiaId - ID da matéria.
+   * @returns true se a matéria existir.
+   */
   async materiaExists(materiaId: string) {
+    await this.ensureSchema();
     const result = await pool.query('SELECT EXISTS (SELECT 1 FROM "materia" WHERE "id" = $1) AS "exists"', [
       materiaId,
     ]);
     return result.rows[0]?.exists ?? false;
   }
 
+  /**
+   * Verifica se um tema pertence a uma matéria específica.
+   *
+   * @param temaId - ID do tema.
+   * @param materiaId - ID da matéria.
+   * @returns true se o tema pertencer à matéria.
+   */
   async temaBelongsToMateria(temaId: string, materiaId: string) {
+    await this.ensureSchema();
     const result = await pool.query(
       'SELECT EXISTS (SELECT 1 FROM "tema" WHERE "id" = $1 AND "materia_id" = $2) AS "exists"',
       [temaId, materiaId],
@@ -111,7 +179,15 @@ export class QuestaoRepository {
     return result.rows[0]?.exists ?? false;
   }
 
+  /**
+   * Verifica se o professor possui vínculo com a matéria.
+   *
+   * @param professorId - ID do professor.
+   * @param materiaId - ID da matéria.
+   * @returns true se houver vínculo.
+   */
   async professorMateriaVinculados(professorId: string, materiaId: string) {
+    await this.ensureSchema();
     const result = await pool.query(
       'SELECT EXISTS (SELECT 1 FROM "materia_professor" WHERE "professor_id" = $1 AND "materia_id" = $2) AS "exists"',
       [professorId, materiaId],
@@ -119,15 +195,22 @@ export class QuestaoRepository {
     return result.rows[0]?.exists ?? false;
   }
 
+  /**
+   * Cria uma nova questão com enunciado e alternativas em transação.
+   *
+   * @param input - Dados completos da questão conforme CreateQuestaoInput.
+   * @returns A questão recém-criada com todos os relacionamentos.
+   */
   async create(input: CreateQuestaoInput) {
+    await this.ensureSchema();
     return withTransaction(async (client) => {
       const questao = await client.query<{ id: string }>(
         `
           INSERT INTO "questao" (
             "materia_id", "tema_id", "tipo", "limite_caracteres", "limite_palavras",
-            "permite_anexo", "pontuacao_padrao", "ativa"
+            "permite_anexo", "pontuacao_padrao", "ativa", "dificuldade"
           )
-          VALUES ($1, $2, $3, $4, $5, COALESCE($6, FALSE), COALESCE($7, 1), COALESCE($8, TRUE))
+          VALUES ($1, $2, $3, $4, $5, COALESCE($6, FALSE), COALESCE($7, 1), COALESCE($8, TRUE), COALESCE($9, 'Media'))
           RETURNING "id"
         `,
         [
@@ -139,6 +222,7 @@ export class QuestaoRepository {
           input.permiteAnexo ?? null,
           input.pontuacaoPadrao ?? null,
           input.ativa ?? null,
+          input.dificuldade ?? null,
         ],
       );
 
@@ -153,7 +237,15 @@ export class QuestaoRepository {
     });
   }
 
+  /**
+   * Lista questões com filtros dinâmicos e paginação.
+   *
+   * @param query - Filtros: materiaId, temaId, tipo, ativa, busca (ILIKE no enunciado).
+   * @param user - Usuário autenticado para filtro de autorização.
+   * @returns Lista paginada de questões com total de registros.
+   */
   async findMany(query: ListQuestoesQuery, user: AuthUser) {
+    await this.ensureSchema();
     const params: unknown[] = [];
     const where: string[] = [];
 
@@ -211,7 +303,15 @@ export class QuestaoRepository {
     };
   }
 
+  /**
+   * Busca questão por ID com enunciado e alternativas.
+   *
+   * @param questaoId - ID da questão.
+   * @param client - Conexão opcional (para uso dentro de transação).
+   * @returns Questão encontrada ou null.
+   */
   async findById(questaoId: string, client: PoolClient | typeof pool = pool) {
+    await this.ensureSchema();
     const result = await client.query<QuestaoRow>(
       `
         ${selectQuestaoSql}
@@ -224,7 +324,15 @@ export class QuestaoRepository {
     return result.rows[0] ? mapQuestao(result.rows[0]) : null;
   }
 
+  /**
+   * Atualiza uma questão, seu enunciado e alternativas em transação.
+   *
+   * @param questaoId - ID da questão.
+   * @param input - Dados para atualização conforme UpdateQuestaoInput.
+   * @returns Questão atualizada com todos os relacionamentos.
+   */
   async update(questaoId: string, input: UpdateQuestaoInput) {
+    await this.ensureSchema();
     return withTransaction(async (client) => {
       await client.query(
         `
@@ -237,8 +345,9 @@ export class QuestaoRepository {
             "limite_palavras" = $5,
             "permite_anexo" = COALESCE($6, FALSE),
             "pontuacao_padrao" = COALESCE($7, 1),
-            "ativa" = COALESCE($8, TRUE)
-          WHERE "id" = $9
+            "ativa" = COALESCE($8, TRUE),
+            "dificuldade" = COALESCE($9, "dificuldade", 'Media')
+          WHERE "id" = $10
         `,
         [
           input.materiaId,
@@ -249,28 +358,42 @@ export class QuestaoRepository {
           input.permiteAnexo ?? null,
           input.pontuacaoPadrao ?? null,
           input.ativa ?? null,
+          input.dificuldade ?? null,
           questaoId,
         ],
       );
 
-      await client.query(
-        `
-          INSERT INTO "enunciado" ("questao_id", "conteudo_latex", "url_imagem")
-          VALUES ($1, $2, $3)
-          ON CONFLICT ("questao_id") DO UPDATE
-          SET "conteudo_latex" = EXCLUDED."conteudo_latex",
-              "url_imagem" = EXCLUDED."url_imagem"
-        `,
-        [questaoId, input.enunciado.conteudoLatex, input.enunciado.urlImagem ?? null],
-      );
+      if (input.enunciado) {
+        await client.query(
+          `
+            INSERT INTO "enunciado" ("questao_id", "conteudo_latex", "url_imagem")
+            VALUES ($1, $2, $3)
+            ON CONFLICT ("questao_id") DO UPDATE
+            SET "conteudo_latex" = EXCLUDED."conteudo_latex",
+                "url_imagem" = EXCLUDED."url_imagem"
+          `,
+          [questaoId, input.enunciado.conteudoLatex, input.enunciado.urlImagem ?? null],
+        );
+      }
 
-      await client.query('DELETE FROM "alternativa" WHERE "questao_id" = $1', [questaoId]);
-      await insertAlternativas(client, questaoId, input.alternativas ?? []);
+      if (input.alternativas) {
+        await client.query('DELETE FROM "alternativa" WHERE "questao_id" = $1', [questaoId]);
+        await insertAlternativas(client, questaoId, input.alternativas);
+      }
       return this.findById(questaoId, client);
     });
   }
 
+  /**
+   * Remove ou desativa uma questão.
+   * Se vinculada a alguma prova, desativa (soft delete);
+   * caso contrário, exclui fisicamente.
+   *
+   * @param questaoId - ID da questão.
+   * @returns "deleted" se removida, "deactivated" se desativada.
+   */
   async deleteOrDeactivate(questaoId: string) {
+    await this.ensureSchema();
     const linked = await pool.query(
       'SELECT EXISTS (SELECT 1 FROM "prova_questao" WHERE "questao_id" = $1) AS "exists"',
       [questaoId],

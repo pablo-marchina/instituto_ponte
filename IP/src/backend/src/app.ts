@@ -26,6 +26,8 @@ import { questaoRoutes } from "./routes/questao.routes.js";
 import { respostaAnexoRoutes } from "./routes/resposta-anexo.routes.js";
 import { respostaAlunoRoutes } from "./routes/resposta-aluno.routes.js";
 import { resultadoRoutes } from "./routes/resultado.routes.js";
+import { turmaRoutes } from "./routes/turma.routes.js";
+import { registerIdempotency } from "./middlewares/idempotency.js";
 
 const validationDetails = (error: Error & { validation?: unknown }) => {
   if (error instanceof ZodError) {
@@ -46,12 +48,18 @@ const validationDetails = (error: Error & { validation?: unknown }) => {
 export function buildApp() {
   const app = Fastify({
     logger: process.env.NODE_ENV !== "test",
+    bodyLimit: 10 * 1024 * 1024,
   });
 
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
-  app.register(fastifyCors, { origin: "*" });
+  app.register(fastifyCors, {
+    origin: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-user-role", "Idempotency-Key"],
+    credentials: true,
+  });
   app.register(fastifySwagger, {
     openapi: {
       info: {
@@ -64,6 +72,7 @@ export function buildApp() {
   app.register(fastifySwaggerUi, {
     routePrefix: "/docs",
   });
+  registerIdempotency(app);
 
   app.register(
     async (api) => {
@@ -84,6 +93,7 @@ export function buildApp() {
       api.register(professorRoutes);
       api.register(materiaRoutes);
       api.register(temaRoutes);
+      api.register(turmaRoutes);
     },
     { prefix: "/api/v1" },
   );
@@ -112,6 +122,19 @@ export function buildApp() {
     }
 
     const maybeValidationError = error as Error & { validation?: unknown };
+
+    const errorCode = (error as { code?: string }).code;
+
+    if (errorCode === "FST_ERR_CTP_BODY_TOO_LARGE") {
+      return reply.status(413).send({
+        success: false,
+        error: {
+          code: "PAYLOAD_TOO_LARGE",
+          message: "O envio excede o limite de 6 MB de imagens por questao.",
+          details: [],
+        },
+      });
+    }
 
     if (error instanceof ZodError || maybeValidationError.validation) {
       return reply.status(422).send({

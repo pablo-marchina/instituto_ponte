@@ -1,0 +1,2 @@
+ALTER TABLE "questao"
+  ADD COLUMN IF NOT EXISTS "dificuldade" TEXT NULL;

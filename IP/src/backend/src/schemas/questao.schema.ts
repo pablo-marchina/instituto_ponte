@@ -2,6 +2,16 @@ import { z } from "zod";
 import { paginationQuerySchema } from "./common.schema.js";
 
 const requiredText = (message: string) => z.string().trim().min(1, message);
+const imageUrlSchema = z
+  .string()
+  .refine(
+    (value) =>
+      /^https?:\/\//i.test(value) ||
+      /^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(value),
+    "A imagem deve ser uma URL http(s) ou uma imagem em base64 valida.",
+  )
+  .nullable()
+  .optional();
 
 export const questaoTipoSchema = z
   .enum(["multipla_escolha", "verdadeiro_falso", "discursiva"])
@@ -10,7 +20,7 @@ export const questaoTipoSchema = z
 export const enunciadoInputSchema = z
   .object({
     conteudoLatex: requiredText("O enunciado é obrigatório.").describe("Conteúdo do enunciado em formato LaTeX."),
-    urlImagem: z.string().url("A URL da imagem deve ser válida.").nullable().optional().describe("URL de imagem opcional para o enunciado."),
+    urlImagem: imageUrlSchema.describe("URL de imagem opcional para o enunciado."),
   })
   .strict();
 
@@ -18,7 +28,7 @@ export const alternativaInputSchema = z
   .object({
     ordemOriginal: z.number().int().positive("A ordem da alternativa deve ser positiva.").describe("Ordem original da alternativa."),
     conteudoLatex: requiredText("O conteúdo da alternativa é obrigatório.").describe("Conteúdo da alternativa em LaTeX."),
-    urlImagem: z.string().url("A URL da imagem deve ser válida.").nullable().optional().describe("URL de imagem opcional."),
+    urlImagem: imageUrlSchema.describe("URL de imagem opcional."),
     correta: z.boolean().describe("Indica se esta é a alternativa correta."),
   })
   .strict();
@@ -28,6 +38,7 @@ export const createQuestaoBodySchema = z
     materiaId: z.string().uuid("O materiaId deve ser um UUID válido.").describe("Identificador único da matéria."),
     temaId: z.string().uuid("O temaId deve ser um UUID válido.").nullable().optional().describe("Identificador único do tema."),
     tipo: questaoTipoSchema,
+    dificuldade: z.string().trim().min(1, "A dificuldade e obrigatoria.").optional().describe("Dificuldade da questao."),
     limiteCaracteres: z.number().int().positive("O limite de caracteres deve ser positivo.").nullable().optional().describe("Limite máximo de caracteres (para discursivas)."),
     limitePalavras: z.number().int().positive("O limite de palavras deve ser positivo.").nullable().optional().describe("Limite máximo de palavras (para discursivas)."),
     permiteAnexo: z.boolean().optional().describe("Indica se a questão permite envio de anexos."),
@@ -38,7 +49,10 @@ export const createQuestaoBodySchema = z
   })
   .strict();
 
-export const updateQuestaoBodySchema = createQuestaoBodySchema;
+export const updateQuestaoBodySchema = createQuestaoBodySchema.partial().refine(
+  (data) => Object.keys(data).length > 0,
+  { message: "Informe ao menos um campo para atualização." },
+);
 
 export const questaoParamsSchema = z.object({
   questaoId: z.string().uuid("O questaoId deve ser um UUID válido.").describe("Identificador único da questão."),
@@ -57,6 +71,7 @@ export const questaoResponseSchema = z.object({
   materiaId: z.string().uuid().describe("Identificador único da matéria associada."),
   temaId: z.string().uuid().nullable().describe("Identificador único do tema associado."),
   tipo: questaoTipoSchema,
+  dificuldade: z.string().describe("Dificuldade da questao."),
   limiteCaracteres: z.number().int().positive().nullable().describe("Limite máximo de caracteres para respostas discursivas."),
   limitePalavras: z.number().int().positive().nullable().describe("Limite máximo de palavras para respostas discursivas."),
   permiteAnexo: z.boolean().describe("Indica se a questão permite anexos nas respostas."),
@@ -77,6 +92,8 @@ export const questaoResponseSchema = z.object({
       correta: z.boolean().describe("Indica se é a alternativa correta."),
     }),
   ).describe("Lista de alternativas da questão."),
+  timesUsed: z.number().int().nonnegative().describe("Quantidade de provas que usam a questão."),
+  successRate: z.number().min(0).max(100).describe("Taxa de acerto percentual em respostas objetivas."),
 });
 
 export type CreateQuestaoInput = z.infer<typeof createQuestaoBodySchema>;

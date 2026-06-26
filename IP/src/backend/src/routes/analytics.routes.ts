@@ -27,6 +27,7 @@ export async function analyticsRoutes(app: FastifyInstance) {
           401: errorResponseSchema,
           403: errorResponseSchema,
           404: errorResponseSchema,
+          422: errorResponseSchema,
         },
       },
     },
