@@ -210,7 +210,7 @@ O pipeline tambem copia `index.html` para `404.html` para que rotas internas do 
 
 O repositorio tambem inclui `.github/workflows/deploy-pages.yml` para publicar o mesmo build estatico no GitHub Pages. Assim como no GitLab Pages, o backend precisa estar em uma URL publica HTTPS e com CORS liberado para a URL do Pages.
 
-No GitHub, habilite `Settings > Pages > Build and deployment > Source > GitHub Actions`. Depois configure em `Settings > Secrets and variables > Actions > Variables`:
+No GitHub, habilite `Settings > Pages > Build and deployment > Source > GitHub Actions`. Se quiser que o proprio workflow habilite o Pages quando ele ainda nao existe, crie tambem um secret de Actions chamado `PAGES_ENABLEMENT_TOKEN` com um token que tenha permissao de administracao do repositorio. Depois configure em `Settings > Secrets and variables > Actions > Variables`:
 
 ```env
 VITE_API_BASE_URL=https://sua-api-publica.example.com/api/v1
