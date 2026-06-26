@@ -113,7 +113,7 @@ Se ainda nao houver dominio proprio, cadastre e valide um remetente individual n
 Crie `src/view/.env`:
 
 ```env
-VITE_API_BASE_URL=https://pablo-marchina.github.io/instituto_ponte/api/v1
+VITE_API_BASE_URL=https://sua-api-publica.example.com/api/v1
 VITE_ALUNO_BASE_URL=https://pablo-marchina.github.io/instituto_ponte/aluno/prova
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=sua-chave-publicavel-do-supabase
@@ -158,9 +158,9 @@ npm --prefix src/view run dev
 URLs publicadas:
 
 - Frontend: `https://pablo-marchina.github.io/instituto_ponte/`
-- WebAPI: `https://pablo-marchina.github.io/instituto_ponte/api/v1`
-- Swagger/OpenAPI: `https://pablo-marchina.github.io/instituto_ponte/docs`
-- Healthcheck: `https://pablo-marchina.github.io/instituto_ponte/api/v1/health`
+- WebAPI: `https://sua-api-publica.example.com/api/v1`
+- Swagger/OpenAPI: `https://sua-api-publica.example.com/docs`
+- Healthcheck: `https://sua-api-publica.example.com/api/v1/health`
 
 ## Build e execucao de producao
 
