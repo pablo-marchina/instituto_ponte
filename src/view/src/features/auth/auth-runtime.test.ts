@@ -63,7 +63,7 @@ describe("auth runtime helpers", () => {
     expect(getSupabaseClient().auth.signInWithOAuth).toHaveBeenCalledWith({
       provider: "google",
       options: {
-        redirectTo: "http://localhost:3000/auth/callback",
+        redirectTo: "https://pablo-marchina.github.io/instituto_ponte/auth/callback",
         skipBrowserRedirect: true,
         queryParams: { access_type: "offline", prompt: "consent" },
       },

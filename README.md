@@ -49,7 +49,7 @@ SUPABASE_JWT_ISSUER=
 
 # OAuth Google usado pelo login de professor/coordenador.
 GOOGLE_CLIENT_ID=seu-google-client-id
-GOOGLE_REDIRECT_URI=http://localhost:5173/auth/callback
+GOOGLE_REDIRECT_URI=https://pablo-marchina.github.io/instituto_ponte/auth/callback
 
 # Opcional apenas para validacao local sem OAuth real.
 AUTH_MODE=
@@ -58,7 +58,7 @@ AUTH_MODE=
 CPF_ENCRYPTION_KEY=troque-por-uma-chave-com-pelo-menos-32-caracteres
 
 # Frontend do aluno usado para gerar links publicos de prova.
-ALUNO_BASE_URL=http://localhost:5173/aluno/prova
+ALUNO_BASE_URL=https://pablo-marchina.github.io/instituto_ponte/aluno/prova
 
 # Banco/resiliencia.
 DB_POOL_MAX=10
@@ -113,8 +113,8 @@ Se ainda nao houver dominio proprio, cadastre e valide um remetente individual n
 Crie `src/view/.env`:
 
 ```env
-VITE_API_BASE_URL=http://localhost:3333/api/v1
-VITE_ALUNO_BASE_URL=http://localhost:5173/aluno/prova
+VITE_API_BASE_URL=https://pablo-marchina.github.io/instituto_ponte/api/v1
+VITE_ALUNO_BASE_URL=https://pablo-marchina.github.io/instituto_ponte/aluno/prova
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=sua-chave-publicavel-do-supabase
 ```
@@ -155,12 +155,12 @@ Terminal 2:
 npm --prefix src/view run dev
 ```
 
-URLs:
+URLs publicadas:
 
-- Frontend: `http://localhost:5173`
-- WebAPI: `http://localhost:3333`
-- Swagger/OpenAPI: `http://localhost:3333/docs`
-- Healthcheck: `http://localhost:3333/api/v1/health`
+- Frontend: `https://pablo-marchina.github.io/instituto_ponte/`
+- WebAPI: `https://pablo-marchina.github.io/instituto_ponte/api/v1`
+- Swagger/OpenAPI: `https://pablo-marchina.github.io/instituto_ponte/docs`
+- Healthcheck: `https://pablo-marchina.github.io/instituto_ponte/api/v1/health`
 
 ## Build e execucao de producao
 
@@ -267,7 +267,7 @@ Os testes de integracao do backend usam PostgreSQL real. Antes de roda-los, apon
 ## Validacao ponta a ponta autenticada
 
 1. Suba banco, backend e frontend seguindo os passos anteriores.
-2. Abra `http://localhost:5173`.
+2. Abra `https://pablo-marchina.github.io/instituto_ponte/`.
 3. Entre como professor ou coordenador pelo fluxo de autenticacao configurado. Em ambiente de avaliacao sem OAuth real, use os endpoints documentados em `/docs` para criar/validar uma sessao de teste conforme `auth.controller.ts`.
 4. Como professor, crie uma prova em `Provas > Nova prova`. Confirme o feedback de rascunho salvo.
 5. Adicione questoes do banco ou crie uma nova questao. Questoes aceitam imagem no enunciado e alternativas quando informado `urlImagem`; respostas de aluno aceitam anexos conforme regras da API.

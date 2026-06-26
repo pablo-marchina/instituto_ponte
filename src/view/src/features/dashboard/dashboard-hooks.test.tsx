@@ -174,7 +174,7 @@ describe("dashboard hooks", () => {
     vi.mocked(publicarProva).mockResolvedValue({
       ...provaDto,
       status: "publicada",
-      urlAcesso: "http://localhost/aluno/prova/link",
+      urlAcesso: "https://pablo-marchina.github.io/instituto_ponte/aluno/prova/link",
     });
     vi.mocked(listProvaQuestoes).mockResolvedValue([provaQuestaoDto]);
     vi.mocked(addQuestaoToProva).mockResolvedValue(provaQuestaoDto);
@@ -331,7 +331,7 @@ describe("dashboard hooks", () => {
       tempoLimiteMin: 45,
     }));
     expect(publicarProva).toHaveBeenCalledWith(PROVA_ID, expect.objectContaining({
-      baseUrlAluno: expect.stringContaining("/aluno/prova"),
+      baseUrlAluno: "https://pablo-marchina.github.io/instituto_ponte/aluno/prova",
       dataFim: publishDeadline,
     }));
 
@@ -361,7 +361,7 @@ describe("dashboard hooks", () => {
       dataInicio: "data-invalida",
       dataLimite: "",
       orientacoes: "   ",
-      urlAcesso: "http://localhost/aluno/prova/link",
+      urlAcesso: "https://pablo-marchina.github.io/instituto_ponte/aluno/prova/link",
     };
     vi.mocked(arquivarProva).mockRejectedValueOnce(new Error("Nao pode arquivar"));
 

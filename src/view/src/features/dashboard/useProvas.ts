@@ -14,7 +14,6 @@ import {
   updateProvaConfiguracoes,
 } from "../provas/provas.api";
 import { listarQuestoesCorrecao } from "../correcao/correcao.api";
-import { appAbsoluteUrl } from "../../lib/routing";
 import { mapProvaToExam } from "../provas/provas.mappers";
 import type {
   CreateProvaPayload,
@@ -54,7 +53,7 @@ function buildUpdateProvaConfiguracoesPayload(exam: Exam): UpdateProvaConfigurac
 function getAlunoBaseUrl() {
   const configuredBaseUrl = import.meta.env.VITE_ALUNO_BASE_URL as string | undefined;
   if (configuredBaseUrl) return configuredBaseUrl.replace(/\/+$/, "");
-  return appAbsoluteUrl("/aluno/prova");
+  return "https://pablo-marchina.github.io/instituto_ponte/aluno/prova";
 }
 
 function toastSuccess(message: string) {
