@@ -40,8 +40,8 @@ jobs:
           CONFIGURED_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
           CONFIGURED_BASE_PATH: ${{ vars.VITE_BASE_PATH }}
           CONFIGURED_ALUNO_BASE_URL: ${{ vars.VITE_ALUNO_BASE_URL }}
-          CONFIGURED_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          CONFIGURED_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          CONFIGURED_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
+          CONFIGURED_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY || secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: |
           repo_name="${GITHUB_REPOSITORY#*/}"
           owner_name="${GITHUB_REPOSITORY_OWNER}"
@@ -73,6 +73,11 @@ jobs:
             configured_api_base_url="http://localhost:3333/api/v1"
           else
             configured_api_base_url="$CONFIGURED_API_BASE_URL"
+          fi
+
+          if [ -z "$CONFIGURED_SUPABASE_URL" ] || [ -z "$CONFIGURED_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::error::Configure VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY em Settings > Secrets and variables > Actions antes de publicar o GitHub Pages."
+            exit 1
           fi
 
           {

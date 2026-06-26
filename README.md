@@ -115,10 +115,8 @@ Crie `src/view/.env`:
 ```env
 VITE_API_BASE_URL=http://localhost:3333/api/v1
 VITE_ALUNO_BASE_URL=http://localhost:5173/aluno/prova
-
-# Apenas se a autenticacao externa/Supabase for usada no ambiente.
-VITE_SUPABASE_URL=
-VITE_SUPABASE_PUBLISHABLE_KEY=
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=sua-chave-publicavel-do-supabase
 ```
 
 ## Banco e migrations
@@ -182,6 +180,8 @@ O repositorio ja inclui `.gitlab-ci.yml` para publicar o frontend em GitLab Page
 
 ```env
 VITE_API_BASE_URL=https://sua-api-publica.example.com/api/v1
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=sua-chave-publicavel-do-supabase
 ```
 
 Variaveis opcionais:
@@ -189,8 +189,6 @@ Variaveis opcionais:
 ```env
 VITE_BASE_PATH=/nome-do-projeto/
 VITE_ALUNO_BASE_URL=https://namespace.gitlab.io/nome-do-projeto/aluno/prova
-VITE_SUPABASE_URL=
-VITE_SUPABASE_PUBLISHABLE_KEY=
 ```
 
 Se `VITE_API_BASE_URL` nao for definida, o pipeline ainda publica o Pages para liberar a URL, mas o app gerado tentara chamar `localhost` e nao conseguira usar os fluxos reais fora do ambiente local. Configure a variavel antes da entrega final.
@@ -214,6 +212,8 @@ No GitHub, habilite `Settings > Pages > Build and deployment > Source > GitHub A
 
 ```env
 VITE_API_BASE_URL=https://sua-api-publica.example.com/api/v1
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=sua-chave-publicavel-do-supabase
 ```
 
 Variaveis opcionais:
@@ -221,8 +221,6 @@ Variaveis opcionais:
 ```env
 VITE_BASE_PATH=/nome-do-repositorio/
 VITE_ALUNO_BASE_URL=https://usuario-ou-org.github.io/nome-do-repositorio/aluno/prova
-VITE_SUPABASE_URL=
-VITE_SUPABASE_PUBLISHABLE_KEY=
 ```
 
 Se `VITE_BASE_PATH` nao for definida, o workflow usa `/nome-do-repositorio/`, que atende ao formato padrao `https://usuario-ou-org.github.io/nome-do-repositorio/`. Para repositorios do tipo `usuario-ou-org.github.io` ou dominio proprio servido na raiz, use `/`.

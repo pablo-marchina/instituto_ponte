@@ -32,6 +32,11 @@ deploy-pages:
         export VITE_API_BASE_URL="http://localhost:3333/api/v1"
       fi
     - |
+      if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
+        echo "ERRO: configure VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY nas variaveis de CI/CD antes de publicar o Pages."
+        exit 1
+      fi
+    - |
       if [ -z "$VITE_BASE_PATH" ]; then
         if [ "$CI_PROJECT_NAME" = "${CI_PROJECT_ROOT_NAMESPACE}.gitlab.io" ]; then
           export VITE_BASE_PATH="/"
