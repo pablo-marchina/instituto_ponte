@@ -39,11 +39,11 @@ jobs:
 
       - name: Configure frontend environment
         env:
-          CONFIGURED_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
-          CONFIGURED_BASE_PATH: ${{ vars.VITE_BASE_PATH }}
-          CONFIGURED_ALUNO_BASE_URL: ${{ vars.VITE_ALUNO_BASE_URL }}
-          CONFIGURED_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
-          CONFIGURED_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY || secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          CONFIGURED_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || secrets.VITE_API_BASE_URL }}
+          CONFIGURED_BASE_PATH: ${{ vars.VITE_BASE_PATH || secrets.VITE_BASE_PATH }}
+          CONFIGURED_ALUNO_BASE_URL: ${{ vars.VITE_ALUNO_BASE_URL || secrets.VITE_ALUNO_BASE_URL }}
+          CONFIGURED_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL || 'https://xisezmvuubfxyfrzkrfu.supabase.co' }}
+          CONFIGURED_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY || secrets.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_UBciMbosbuJeQMrmiwGpbg_bHo4Pu4I' }}
         run: |
           repo_name="${GITHUB_REPOSITORY#*/}"
           owner_name="${GITHUB_REPOSITORY_OWNER}"
